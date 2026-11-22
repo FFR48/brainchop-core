@@ -116,7 +116,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: neuroneural/brainchop-test
-          ref: 59a79eea05ddd08070d0dba17120debedf0b4790
+          ref: f12db2cae95b54f67219af5e5808aca781adc216
           path: brainchop-test
           persist-credentials: false
       - uses: msys2/setup-msys2@v2
