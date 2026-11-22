@@ -1,0 +1,134 @@
+# macOS metadata
+.DS_Store
+
+# Local agent state
+/.claude/
+
+# Default output name, dropped by a bare invocation during testing.
+output.nii.gz
+mask.nii.gz
+
+# Compiler output
+*.o
+*.d
+*.dSYM/
+*.exe
+brainchopc
+/src/brainchop
+# One executable per model, plus their per-model object directories.
+brainchop-*
+!brainchop-*.md
+src/build/
+src/.build-config
+# The compiler probes at the top of src/Makefile write a real executable and
+# delete it (see BC_PROBE_ISA there -- neither /dev/null nor NUL can be a link
+# target on Windows). *.exe above catches the Windows spelling; this catches the
+# Unix one, and both catch a probe left behind by an interrupted build.
+.bc-probe-*
+audit_*.md
+plan_*.md
+/dist/
+
+# Test fixtures and harness. The inputs, the CPU reference outputs and the
+# baseline scripts are tracked so a fresh clone can run `make test`; anything
+# else dropped in test/ is local. test/baseline/ in particular must stay
+# untracked: it retains ~28 MB but transiently writes ~2 GB, because the two
+# --export-classes cases each produce a gigabyte of float logits before being
+# digested and discarded.
+# ADDING A FILE UNDER test/ MEANS ADDING A LINE BELOW. This rule has silently
+# swallowed several files the build or CLAUDE.md names -- `git add -A` reports
+# nothing, so it looks like it worked. Check with
+# `git status --porcelain --ignored | grep test/` after adding one.
+/test/*
+!/test/t1_crop.nii.gz
+!/test/bet.nii.gz
+!/test/labels16.nii.gz
+!/test/labels24.nii.gz
+!/test/labels16_native_majority.nii.gz
+!/test/labels16_native_majority_wasm.nii.gz
+!/test/labels24_native_majority.nii.gz
+!/test/labels104.nii.gz
+!/test/labels104_native_majority.nii.gz
+!/test/labels104_wasm.nii.gz
+!/test/baseline.sh
+!/test/baseline_cases.txt
+!/test/nii_diff.py
+!/test/nii_dice.py
+!/test/cpu_turbo_check.c
+!/test/cpu_sme_check.c
+!/test/cuda_module_smoke.c
+!/test/test_cuda_modules.py
+!/test/test_hip_artifacts.py
+!/test/test_build_hip_artifacts.py
+!/test/cuda_driver_contract.c
+!/test/cuda_legacy_contract.cu
+!/test/cuda_no_driver.py
+!/test/cuda_pve_check.py
+!/test/pve_bench.sh
+!/test/label_cleanup_check.c
+!/test/label_cleanup_check.mjs
+!/test/label_quality_check.c
+!/test/label_failure_check.c
+!/test/label_resample_check.c
+!/test/label_resample_check.mjs
+!/test/webgpu_benchmark.c
+!/test/webgpu_benchmark_backend.c
+!/test/benchmark.py
+# The captured benchmark matrix. Tracked deliberately: it is the reference
+# `make benchmark-compare` diffs against, so an untracked one would make the
+# comparison unavailable on a fresh clone -- which is the whole point of it.
+# (BENCH_REFERENCE selects a different one; `make benchmark-compare` is the
+# target, and src/Makefile owns both.)
+!/test/benchmark_reference.json
+!/test/t1_2mm.nii.gz
+!/test/wasm_run.mjs
+!/test/wgsl_validate.mjs
+!/test/wasm_gpu_run.mjs
+!/test/dump_wgsl.c
+!/test/glsl_validate.mjs
+!/test/wasm_gl_run.mjs
+# The browser gate for the THREADED CPU module: cross-origin isolation, growable
+# shared memory and nested workers, none of which node can answer.
+!/test/wasm_mt_run.mjs
+!/test/dump_glsl.c
+# The ThreadSanitizer harness `make tsan-threads` compiles.
+!/test/threads_race_check.c
+!/test/cat_lite_check.c
+!/test/cat_lite_cases.mjs
+!/test/cat_lite_volume_cases.mjs
+!/test/cat_lite_cache_check.c
+!/test/cat_lite_js_check.mjs
+# The Apple-silicon benchmark capture, tracked for the same reason
+# benchmark_reference.json is: `make benchmark-compare
+# BENCH_REFERENCE=../test/benchmark_reference_m4pro.json` is how a comparison on
+# Apple silicon is done, and an untracked reference makes it fail on a fresh
+# clone.
+!/test/benchmark_reference_m4pro.json
+# Windows 11 / UCRT64 clang, on the same Ryzen + RTX 4070 Ti SUPER as
+# benchmark_reference.json, so the two differ by OS (and commit), not hardware.
+!/test/benchmark_reference_windows.json
+!/test/webgl2_conv_first_check.c
+
+# Raw Gecko Profiler captures are tens of MiB and machine-specific. Keep the
+# small analysis/reproduction note, not the recording itself.
+#
+# The DIRECTORY is ignored with an allowlist, like /test/* above and for the
+# same reason: `/profiles/*.json` would have ignored one capture format and
+# silently tracked the next one someone exports. So the `!` line below is
+# load-bearing -- a new file here needs its own, exactly as under test/.
+/profiles/*
+!/profiles/README.md
+!/test/hip_classifier_check.py
+!/test/hip_native_check.py
+!/test/hip_no_toolchain.py
+!/test/test_hip_native_check.py
+!/test/hip_pr34_reuse.tar.gz
+!/test/hip_allocation_check.c
+!/test/hip_oom_audit.c
+!/test/hip_allocation_check.py
+!/test/test_hip_evidence.py
+
+# Source-package tests and Python build caches
+__pycache__/
+!/test/*pypi*.py
+!/test/pip_hardware_cache.py

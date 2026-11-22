@@ -1,0 +1,14 @@
+{
+  "mindgrab": {
+    "pve": false
+  },
+  "model16chan18cls": {
+    "pve": false
+  },
+  "mindmap": {
+    "pve": true
+  },
+  "mindsnap": {
+    "pve": false
+  }
+}

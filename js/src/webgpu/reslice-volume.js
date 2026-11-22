@@ -1,0 +1,378 @@
+// reslice-volume.js
+// Pure volume reslicing from conformed space (typically 256³, 1 mm) back onto
+// the original native input grid. Zero DOM / NiiVue / gl-matrix dependency so
+// it runs identically inside Web Workers, browsers, and Node unit tests.
+
+/**
+ * Invert a 4x4 row-major affine matrix (bottom row [0, 0, 0, 1]).
+ * Returns a flat 16-element row-major array or null if singular.
+ */
+export function invertAffine4x4(m) {
+  const flat = Array.isArray(m[0])
+    ? [
+        m[0][0], m[0][1], m[0][2], m[0][3],
+        m[1][0], m[1][1], m[1][2], m[1][3],
+        m[2][0], m[2][1], m[2][2], m[2][3],
+        0, 0, 0, 1,
+      ]
+    : m;
+  const a00 = flat[0], a01 = flat[1], a02 = flat[2], a03 = flat[3];
+  const a10 = flat[4], a11 = flat[5], a12 = flat[6], a13 = flat[7];
+  const a20 = flat[8], a21 = flat[9], a22 = flat[10], a23 = flat[11];
+
+  const c00 = a11 * a22 - a12 * a21;
+  const c01 = -(a10 * a22 - a12 * a20);
+  const c02 = a10 * a21 - a11 * a20;
+  const det = a00 * c00 + a01 * c01 + a02 * c02;
+  if (!Number.isFinite(det) || Math.abs(det) < 1e-12) return null;
+  const invDet = 1 / det;
+
+  const r00 = c00 * invDet;
+  const r01 = -(a01 * a22 - a02 * a21) * invDet;
+  const r02 = (a01 * a12 - a02 * a11) * invDet;
+  const r10 = c01 * invDet;
+  const r11 = (a00 * a22 - a02 * a20) * invDet;
+  const r12 = -(a00 * a12 - a02 * a10) * invDet;
+  const r20 = c02 * invDet;
+  const r21 = -(a00 * a21 - a01 * a20) * invDet;
+  const r22 = (a00 * a11 - a01 * a10) * invDet;
+
+  return [
+    r00, r01, r02, -(r00 * a03 + r01 * a13 + r02 * a23),
+    r10, r11, r12, -(r10 * a03 + r11 * a13 + r12 * a23),
+    r20, r21, r22, -(r20 * a03 + r21 * a13 + r22 * a23),
+    0, 0, 0, 1,
+  ];
+}
+
+/**
+ * Multiply two 4x4 row-major affine matrices (flat 16-element or nested 4x4).
+ */
+export function mulAffine4x4(a, b) {
+  const af = Array.isArray(a[0]) ? a.flat() : a;
+  const bf = Array.isArray(b[0]) ? b.flat() : b;
+  const out = new Array(16);
+  for (let r = 0; r < 3; r++) {
+    const r4 = r * 4;
+    const a0 = af[r4], a1 = af[r4 + 1], a2 = af[r4 + 2], a3 = af[r4 + 3];
+    out[r4]     = a0 * bf[0] + a1 * bf[4] + a2 * bf[8];
+    out[r4 + 1] = a0 * bf[1] + a1 * bf[5] + a2 * bf[9];
+    out[r4 + 2] = a0 * bf[2] + a1 * bf[6] + a2 * bf[10];
+    out[r4 + 3] = a0 * bf[3] + a1 * bf[7] + a2 * bf[11] + a3;
+  }
+  out[12] = 0; out[13] = 0; out[14] = 0; out[15] = 1;
+  return out;
+}
+
+const TYPED_ARRAY_CTORS = {
+  Int8Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Uint16Array,
+  Int32Array,
+  Uint32Array,
+  Float32Array,
+  Float64Array,
+};
+
+/**
+ * Reslice a conformed segmentation, intensity volume, or probability map onto
+ * a target native grid.
+ *
+ * - Discrete label map (`isLabel === true`): adaptive center-outward midpoint
+ *   pair majority vote per destination axis (1 tap `[0]` at exact center for
+ *   step length `L <= 1.5001` conformed voxels; symmetric `n = 4, 6, or 8`
+ *   midpoint taps `±(m + 0.5) / n` ordered center-outward for `L <= 3.5001`,
+ *   `L <= 5.5001`, or `L > 5.5001`, avoiding half-integer `.5` collisions at
+ *   both integer `C` and odd-dimension half-integer `C + 0.5` centers while
+ *   resolving equal-vote ties to the centermost probe), written as Int16
+ *   tagged NIFTI_INTENT_LABEL (1002), optionally remapped via `labelLut`.
+ * - Probability map (`isProbability === true`): trilinear interpolation stored
+ *   as Uint8 (0..255) with `scl_slope = 1/255`.
+ * - Intensity output (e.g. MindGrab skull-stripped brain): nearest-neighbor,
+ *   preserving the target native TypedArray kind (`dstTypedArrayKind`).
+ *
+ * @param {object} params
+ * @param {ArrayBufferView} params.srcImg
+ * @param {number[]} params.srcDims        [snx, sny, snz]
+ * @param {number[][]} params.srcAffine    4×4 row-major storage-voxel -> mm
+ * @param {number[]} params.dstDims        [nx, ny, nz]
+ * @param {number[][]} params.dstAffine    4×4 row-major storage-voxel -> mm
+ * @param {boolean} params.isLabel
+ * @param {boolean} [params.isProbability=false]
+ * @param {string} [params.dstTypedArrayKind='Uint8Array']
+ * @param {Uint16Array|Int16Array|Int32Array|number[]|null} [params.labelLut=null]
+ */
+export function resliceVolumeData({
+  srcImg,
+  srcDims,
+  srcAffine,
+  dstDims,
+  dstAffine,
+  isLabel,
+  isProbability = false,
+  dstTypedArrayKind = "Uint8Array",
+  labelOutputType = "int16",
+  labelLut = null,
+}) {
+  const [nx, ny, nz] = dstDims;
+  const [snx, sny, snz] = srcDims;
+  const A = Array.isArray(dstAffine[0])
+    ? dstAffine
+    : [
+        dstAffine.slice(0, 4),
+        dstAffine.slice(4, 8),
+        dstAffine.slice(8, 12),
+        [0, 0, 0, 1],
+      ];
+
+  const applyAffine = (a, v) => [
+    a[0][0] * v[0] + a[0][1] * v[1] + a[0][2] * v[2] + a[0][3],
+    a[1][0] * v[0] + a[1][1] * v[1] + a[1][2] * v[2] + a[1][3],
+    a[2][0] * v[0] + a[2][1] * v[1] + a[2][2] * v[2] + a[2][3],
+  ];
+
+  // mm -> conformed storage voxel via inverting the overlay's own storage-voxel -> mm affine.
+  const segInv = invertAffine4x4(srcAffine);
+  if (!segInv) {
+    throw new Error("Segmentation affine is not invertible");
+  }
+
+  const applyInv = (m, v) => [
+    m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3],
+    m[4] * v[0] + m[5] * v[1] + m[6] * v[2] + m[7],
+    m[8] * v[0] + m[9] * v[1] + m[10] * v[2] + m[11],
+  ];
+
+  // native storage voxel -> conformed storage voxel (fractional)
+  const f = (v) => applyInv(segInv, applyAffine(A, v));
+  const o = f([0, 0, 0]);
+  const ex = f([1, 0, 0]).map((x, i) => x - o[i]);
+  const ey = f([0, 1, 0]).map((x, i) => x - o[i]);
+  const ez = f([0, 0, 1]).map((x, i) => x - o[i]);
+
+  const nvox = nx * ny * nz;
+  const snxy = snx * sny;
+  const sample = (x, y, z) =>
+    x >= 0 && x < snx && y >= 0 && y < sny && z >= 0 && z < snz
+      ? srcImg[x + y * snx + z * snxy]
+      : 0;
+
+  if (isLabel) {
+    // Adaptive center-outward midpoint-pair sub-voxel offsets per destination axis
+    // (bit-exact with brainchopC conform.c):
+    //   L <= 1.5001 -> 1 tap  [0]
+    //   L <= 3.5001 -> 4 taps [-0.5/4, +0.5/4, -1.5/4, +1.5/4]
+    //   L <= 5.5001 -> 6 taps [-0.5/6, +0.5/6, -1.5/6, +1.5/6, -2.5/6, +2.5/6]
+    //   L >  5.5001 -> 8 taps [±0.5/8, ±1.5/8, ±2.5/8, ±3.5/8]
+    // Midpoint pairs eliminate half-integer (.5) rounding collisions at BOTH
+    // integer centers C and odd-dimension half-integer centers C + 0.5, while
+    // center-outward ordering resolves ties to the centermost probe.
+    const axisOffsets = (e) => {
+      const len = Math.sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+      if (len <= 1.5001) return [0.0];
+      const n = len <= 3.5001 ? 4 : len <= 5.5001 ? 6 : 8;
+      const offs = new Array(n);
+      for (let m = 0; m < n / 2; m++) {
+        const d = (m + 0.5) / n;
+        offs[2 * m] = -d;
+        offs[2 * m + 1] = d;
+      }
+      return offs;
+    };
+
+    const ox = axisOffsets(ex);
+    const oy = axisOffsets(ey);
+    const oz = axisOffsets(ez);
+    const deltas = [];
+    for (const dx of ox) {
+      for (const dy of oy) {
+        for (const dz of oz) {
+          deltas.push([
+            dx * ex[0] + dy * ey[0] + dz * ez[0],
+            dx * ex[1] + dy * ey[1] + dz * ez[1],
+            dx * ex[2] + dy * ey[2] + dz * ez[2],
+          ]);
+        }
+      }
+    }
+
+    const out = labelOutputType === "uint8" ? new Uint8Array(nvox) : new Int16Array(nvox);
+    const lutLen = labelLut ? labelLut.length : 0;
+    let maxLabel = 0;
+    const nDeltas = deltas.length;
+    let idx = 0;
+
+    if (nDeltas === 1) {
+      for (let k = 0; k < nz; k++) {
+        for (let j = 0; j < ny; j++) {
+          let bx = o[0] + j * ey[0] + k * ez[0];
+          let by = o[1] + j * ey[1] + k * ez[1];
+          let bz = o[2] + j * ey[2] + k * ez[2];
+          for (let i = 0; i < nx; i++) {
+            let best = sample(
+              Math.floor(bx + 0.5),
+              Math.floor(by + 0.5),
+              Math.floor(bz + 0.5)
+            );
+            if (labelLut && best >= 0 && best < lutLen) best = labelLut[best];
+            if (best > maxLabel) maxLabel = best;
+            out[idx++] = best;
+            bx += ex[0];
+            by += ex[1];
+            bz += ex[2];
+          }
+        }
+      }
+    } else {
+      const tv = new Int32Array(nDeltas);
+      const tc = new Int32Array(nDeltas);
+      for (let k = 0; k < nz; k++) {
+        for (let j = 0; j < ny; j++) {
+          let bx = o[0] + j * ey[0] + k * ez[0];
+          let by = o[1] + j * ey[1] + k * ez[1];
+          let bz = o[2] + j * ey[2] + k * ez[2];
+          for (let i = 0; i < nx; i++) {
+            let nt = 0;
+            for (let s = 0; s < nDeltas; s++) {
+              const d = deltas[s];
+              const lbl = sample(
+                Math.floor(bx + d[0] + 0.5),
+                Math.floor(by + d[1] + 0.5),
+                Math.floor(bz + d[2] + 0.5)
+              );
+              let t = -1;
+              for (let q = 0; q < nt; q++) {
+                if (tv[q] === lbl) {
+                  t = q;
+                  break;
+                }
+              }
+              if (t < 0) {
+                tv[nt] = lbl;
+                tc[nt] = 1;
+                nt++;
+              } else {
+                tc[t]++;
+              }
+            }
+            let best = tv[0];
+            let bc = tc[0];
+            for (let q = 1; q < nt; q++) {
+              if (tc[q] > bc) {
+                bc = tc[q];
+                best = tv[q];
+              }
+            }
+            if (labelLut && best >= 0 && best < lutLen) best = labelLut[best];
+            if (best > maxLabel) maxLabel = best;
+            out[idx++] = best;
+            bx += ex[0];
+            by += ex[1];
+            bz += ex[2];
+          }
+        }
+      }
+    }
+
+    return {
+      img: out,
+      hdrPatch: {
+        datatypeCode: labelOutputType === "uint8" ? 2 : 4, // DT_UINT8 or DT_INT16
+        numBitsPerVoxel: labelOutputType === "uint8" ? 8 : 16,
+        scl_slope: 1,
+        scl_inter: 0,
+        cal_min: 0,
+        cal_max: labelOutputType === "uint8" ? 0 : maxLabel,
+        intent_code: 1002, // NIFTI_INTENT_LABEL
+      },
+    };
+  }
+
+  // Intensity output (skull-stripped brain): plain nearest-neighbor keeping the
+  // native datatype, NOT tagged as LABEL.
+  // Probabilities (0..1 float): trilinear, uint8 0..255 with scl_slope = 1/255.
+  const Ctor = TYPED_ARRAY_CTORS[dstTypedArrayKind] || Uint8Array;
+  const scale = isProbability ? 255 : 1;
+  const round = isProbability ? 0.5 : 0;
+  const out = isProbability ? new Uint8Array(nvox) : new Ctor(nvox);
+
+  const trilinear = (x, y, z) => {
+    const x0 = Math.floor(x);
+    const y0 = Math.floor(y);
+    const z0 = Math.floor(z);
+    const fx = x - x0;
+    const fy = y - y0;
+    const fz = z - z0;
+    const v000 = sample(x0, y0, z0);
+    const v100 = sample(x0 + 1, y0, z0);
+    const v010 = sample(x0, y0 + 1, z0);
+    const v110 = sample(x0 + 1, y0 + 1, z0);
+    const v001 = sample(x0, y0, z0 + 1);
+    const v101 = sample(x0 + 1, y0, z0 + 1);
+    const v011 = sample(x0, y0 + 1, z0 + 1);
+    const v111 = sample(x0 + 1, y0 + 1, z0 + 1);
+    const y0z0 = v000 + fx * (v100 - v000);
+    const y1z0 = v010 + fx * (v110 - v010);
+    const y0z1 = v001 + fx * (v101 - v001);
+    const y1z1 = v011 + fx * (v111 - v011);
+    const z0v = y0z0 + fy * (y1z0 - y0z0);
+    const z1v = y0z1 + fy * (y1z1 - y0z1);
+    return z0v + fz * (z1v - z0v);
+  };
+
+  const at = isProbability
+    ? trilinear
+    : (x, y, z) => sample(Math.round(x), Math.round(y), Math.round(z));
+
+  let idx = 0;
+  if (isProbability) {
+    for (let k = 0; k < nz; k++) {
+      for (let j = 0; j < ny; j++) {
+        let bx = o[0] + j * ey[0] + k * ez[0];
+        let by = o[1] + j * ey[1] + k * ez[1];
+        let bz = o[2] + j * ey[2] + k * ez[2];
+        for (let i = 0; i < nx; i++) {
+          let v = trilinear(bx, by, bz);
+          if (!(v > 0)) v = 0;
+          else if (v > 1) v = 1;
+          out[idx++] = Math.floor(v * 255 + 0.5);
+          bx += ex[0];
+          by += ex[1];
+          bz += ex[2];
+        }
+      }
+    }
+  } else {
+    for (let k = 0; k < nz; k++) {
+      for (let j = 0; j < ny; j++) {
+        let bx = o[0] + j * ey[0] + k * ez[0];
+        let by = o[1] + j * ey[1] + k * ez[1];
+        let bz = o[2] + j * ey[2] + k * ez[2];
+        for (let i = 0; i < nx; i++) {
+          out[idx++] = at(bx, by, bz);
+          bx += ex[0];
+          by += ex[1];
+          bz += ex[2];
+        }
+      }
+    }
+  }
+
+  const hdrPatch = isProbability
+    ? {
+        datatypeCode: 2,
+        numBitsPerVoxel: 8,
+        cal_min: 0,
+        cal_max: 1,
+        scl_slope: 1 / scale,
+        scl_inter: 0,
+      }
+    : {
+        scl_slope: 1,
+        scl_inter: 0,
+      };
+
+  return { img: out, hdrPatch };
+}

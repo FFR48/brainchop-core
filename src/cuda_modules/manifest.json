@@ -1,0 +1,538 @@
+{
+  "abi_version": 2,
+  "architectures": [
+    60,
+    70,
+    75,
+    80,
+    86,
+    89,
+    90
+  ],
+  "compiler_flags": [
+    "-O3",
+    "--use_fast_math",
+    "-std=c++11",
+    "--machine=64"
+  ],
+  "geometry": {
+    "mindgrab": {
+      "CONV_THREADS": 512,
+      "CONV_VPT": 3,
+      "CS": 16,
+      "DIM": 256,
+      "MAX_CHANNELS": 16,
+      "REDUCE_BLOCKS": 256,
+      "REDUCE_THREADS": 256,
+      "THREADS": 128,
+      "WMMA_SCRATCH": 1024,
+      "WMMA_TILE": 16,
+      "WMMA_WARPS": 8
+    },
+    "mindmap": {
+      "CONV_THREADS": 512,
+      "CONV_VPT": 3,
+      "CS": 24,
+      "DIM": 256,
+      "MAX_CHANNELS": 24,
+      "REDUCE_BLOCKS": 256,
+      "REDUCE_THREADS": 256,
+      "THREADS": 128,
+      "WMMA_SCRATCH": 1024,
+      "WMMA_TILE": 16,
+      "WMMA_WARPS": 8
+    },
+    "mindsnap": {
+      "CONV_THREADS": 512,
+      "CONV_VPT": 3,
+      "CS": 24,
+      "DIM": 256,
+      "MAX_CHANNELS": 24,
+      "REDUCE_BLOCKS": 256,
+      "REDUCE_THREADS": 256,
+      "THREADS": 128,
+      "WMMA_SCRATCH": 1024,
+      "WMMA_TILE": 16,
+      "WMMA_WARPS": 8
+    },
+    "model16chan18cls": {
+      "CONV_THREADS": 512,
+      "CONV_VPT": 3,
+      "CS": 16,
+      "DIM": 256,
+      "MAX_CHANNELS": 16,
+      "REDUCE_BLOCKS": 256,
+      "REDUCE_THREADS": 256,
+      "THREADS": 128,
+      "WMMA_SCRATCH": 1024,
+      "WMMA_TILE": 16,
+      "WMMA_WARPS": 8
+    }
+  },
+  "kernels": [
+    {
+      "id": "scalar_1_128",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi1ELi128EEvPK6__halfPS0_S2_iiii",
+      "threads": 128,
+      "vpt": 1
+    },
+    {
+      "id": "scalar_1_256",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi1ELi256EEvPK6__halfPS0_S2_iiii",
+      "threads": 256,
+      "vpt": 1
+    },
+    {
+      "id": "scalar_1_512",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi1ELi512EEvPK6__halfPS0_S2_iiii",
+      "threads": 512,
+      "vpt": 1
+    },
+    {
+      "id": "scalar_2_128",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi2ELi128EEvPK6__halfPS0_S2_iiii",
+      "threads": 128,
+      "vpt": 2
+    },
+    {
+      "id": "scalar_2_256",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi2ELi256EEvPK6__halfPS0_S2_iiii",
+      "threads": 256,
+      "vpt": 2
+    },
+    {
+      "id": "scalar_2_512",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi2ELi512EEvPK6__halfPS0_S2_iiii",
+      "threads": 512,
+      "vpt": 2
+    },
+    {
+      "id": "scalar_3_128",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi3ELi128EEvPK6__halfPS0_S2_iiii",
+      "threads": 128,
+      "vpt": 3
+    },
+    {
+      "id": "scalar_3_256",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi3ELi256EEvPK6__halfPS0_S2_iiii",
+      "threads": 256,
+      "vpt": 3
+    },
+    {
+      "id": "scalar_3_512",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi3ELi512EEvPK6__halfPS0_S2_iiii",
+      "threads": 512,
+      "vpt": 3
+    },
+    {
+      "id": "scalar_4_128",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi4ELi128EEvPK6__halfPS0_S2_iiii",
+      "threads": 128,
+      "vpt": 4
+    },
+    {
+      "id": "scalar_4_256",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi4ELi256EEvPK6__halfPS0_S2_iiii",
+      "threads": 256,
+      "vpt": 4
+    },
+    {
+      "id": "scalar_4_512",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi4ELi512EEvPK6__halfPS0_S2_iiii",
+      "threads": 512,
+      "vpt": 4
+    },
+    {
+      "id": "scalar_6_128",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi6ELi128EEvPK6__halfPS0_S2_iiii",
+      "threads": 128,
+      "vpt": 6
+    },
+    {
+      "id": "scalar_6_256",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi6ELi256EEvPK6__halfPS0_S2_iiii",
+      "threads": 256,
+      "vpt": 6
+    },
+    {
+      "id": "scalar_6_512",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi6ELi512EEvPK6__halfPS0_S2_iiii",
+      "threads": 512,
+      "vpt": 6
+    },
+    {
+      "id": "scalar_8_128",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi8ELi128EEvPK6__halfPS0_S2_iiii",
+      "threads": 128,
+      "vpt": 8
+    },
+    {
+      "id": "scalar_8_256",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi8ELi256EEvPK6__halfPS0_S2_iiii",
+      "threads": 256,
+      "vpt": 8
+    },
+    {
+      "id": "scalar_8_512",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int",
+        "int",
+        "int"
+      ],
+      "symbol": "_Z13conv3d_kernelILi8ELi512EEvPK6__halfPS0_S2_iiii",
+      "threads": 512,
+      "vpt": 8
+    },
+    {
+      "id": "wmma_2",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "_Z18conv3d_wmma_kernelILi2EEvPK6__halfPS0_S2_i",
+      "warps": 2
+    },
+    {
+      "id": "wmma_4",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "_Z18conv3d_wmma_kernelILi4EEvPK6__halfPS0_S2_i",
+      "warps": 4
+    },
+    {
+      "id": "wmma_8",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "_Z18conv3d_wmma_kernelILi8EEvPK6__halfPS0_S2_i",
+      "warps": 8
+    },
+    {
+      "id": "wmma_16",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "_Z18conv3d_wmma_kernelILi16EEvPK6__halfPS0_S2_i",
+      "warps": 16
+    },
+    {
+      "id": "wmma_24",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "_Z18conv3d_wmma_kernelILi24EEvPK6__halfPS0_S2_i",
+      "warps": 24
+    },
+    {
+      "id": "wmma_32",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "_Z18conv3d_wmma_kernelILi32EEvPK6__halfPS0_S2_i",
+      "warps": 32
+    },
+    {
+      "id": "wmma_probe_kernel",
+      "parameters": [
+        "pointer"
+      ],
+      "symbol": "wmma_probe_kernel"
+    },
+    {
+      "id": "reduce_channels_kernel",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "reduce_channels_kernel"
+    },
+    {
+      "id": "moments_finish_kernel",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "moments_finish_kernel"
+    },
+    {
+      "id": "norm_gelu_kernel",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "int"
+      ],
+      "symbol": "norm_gelu_kernel"
+    },
+    {
+      "id": "classify_kernel",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int"
+      ],
+      "symbol": "classify_kernel"
+    },
+    {
+      "id": "tissue_priors_kernel",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "int",
+        "int"
+      ],
+      "symbol": "tissue_priors_kernel"
+    },
+    {
+      "id": "checksum_kernel",
+      "parameters": [
+        "pointer",
+        "pointer",
+        "size"
+      ],
+      "symbol": "checksum_kernel"
+    },
+    {
+      "id": "fill_pattern_kernel",
+      "parameters": [
+        "pointer",
+        "size"
+      ],
+      "symbol": "fill_pattern_kernel"
+    }
+  ],
+  "minimum_driver_api": 12080,
+  "models": {
+    "mindgrab": {
+      "file": "mindgrab.fatbin",
+      "sha256": "d413f064ae1079c195b2cf2bec1daa280398e282c4b1320f9d41a4bb911ec2e5",
+      "size": 2381736
+    },
+    "mindmap": {
+      "file": "mindmap.fatbin",
+      "sha256": "2bdf3a31e957d7cf221e71a7da42ef6eb9b982db3e0224a0389af14c341d7f70",
+      "size": 4793104
+    },
+    "mindsnap": {
+      "file": "mindsnap.fatbin",
+      "sha256": "09b9e52a9ebf66e8fc67202457754d6052a113e488beaafe5798b55ec448378f",
+      "size": 3357624
+    },
+    "model16chan18cls": {
+      "file": "model16chan18cls.fatbin",
+      "sha256": "0811f08d4ff929a8eed8a901a6a4949e783cc55f5cea10998e3c8717eaf72d90",
+      "size": 3708776
+    }
+  },
+  "nvcc_version": "12.8.93",
+  "ptx_architecture": 90,
+  "ptx_version": "8.7",
+  "schema_version": 2,
+  "sources": {
+    "scripts/build_cuda_modules.py": "388d83580c9f3935d6c0c628272d57cadf78613fcd4b92f8909256af1ddea325",
+    "src/cuda_geometry.h": "c7a317ccf4f9e3e8dc572d493423e7a38b522d9e55105152ab2fa21dbb910bcc",
+    "src/cuda_geometry_mindmap.h": "29655b4e0a7c485b2c37d7b9d7102515fbd103ae81040a1da912c142d2d36d67",
+    "src/cuda_kernels.cuh": "e15f0ad9768362a3dd96e04441de4ea8dc00dacf3d1d3c6708e636b98c78c785",
+    "src/cuda_module.cu": "c68758bdc38d62724ebedb767d3916932d920b70572465f69a116d09e4dde85b",
+    "src/cuda_variants.h": "f03411c527b7c515475ede78f96c0b6cf03dd57537a11477030304ab27a94c26",
+    "src/model_specs.h": "dc81cafa71cad49378e853030d6ce9294531c74d999ccf2ebc7647de0a059190",
+    "src/models/mindgrab/model.json": "24d1bcccba736a83c80b336ca349297f4839ae08b8ec92ec72c5d6adb9afe76e",
+    "src/models/mindgrab/model_def.h": "c311c4c25f4523ed3f45e0d567f4bc1a36817e33907fd28edd23726d13268544",
+    "src/models/mindgrab/model_meta.json": "408a524ec41fbc39099b618311d3012f023a08619c97e577958d4bc435d17ee3",
+    "src/models/mindmap/model.json": "456a8bab833371165fb50ddd168ec51cfaa2a1622168807b130139700df719f9",
+    "src/models/mindmap/model_def.h": "f32ef41da87ed89ddd16a97b4bdeb6d3daef0dc82374a4843a93e99d7ddd5e8c",
+    "src/models/mindmap/model_meta.json": "55e10e00f874ed68782d92ec9e3364d129fb65e2cf410a83e4e838157227e8e9",
+    "src/models/mindsnap/model.json": "0ff8cdb77d2da6cc5176029f3a5081b8ca53cfbc8197ce0a1f4066e660351597",
+    "src/models/mindsnap/model_def.h": "84d4546e2578d062c33aca3531bd32d3fd1732e9b372eeda69e6ff8ac8502fe0",
+    "src/models/mindsnap/model_meta.json": "e9e2e263535011aef8620d5633bb7154d9e8950c42b41aaa8b31f47e4cef93d3",
+    "src/models/model16chan18cls/model.json": "758fdd73d1d10d01342c0633e7d146a5f0ee31eb7ffee196ca9271e72dea1ffb",
+    "src/models/model16chan18cls/model_def.h": "808d3ff658c37f560a2a79345f9098afc446be55750ffea4628b73014c324edb",
+    "src/models/model16chan18cls/model_meta.json": "1b6a8ea0db3c33456038284886ee170372d92e0af048178920bdd929167a762e",
+    "src/pve_constants.h": "2bcbd8fceab885aba4b04cf0f61a4c878d6c5cab45422157af94e4e090d5ac4c"
+  }
+}

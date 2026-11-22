@@ -1,0 +1,108 @@
+# Baseline invocation matrix for the modular refactor.
+#
+# Each case runs into its own output directory, so files a case writes as a side
+# effect (--mask, --export-classes class maps) land there with no bookkeeping:
+# the whole directory is digested.
+#
+# Columns, pipe separated:
+#   name     case identifier and output directory name
+#   model    mindgrab | model16chan18cls  (selects which executable to invoke)
+#   input    a tracked fixture name -> test/<name>.nii.gz
+#            @extra/<name>          -> $BC_EXTRA_DIR/<name>.nii.gz, skipped
+#                                      when BC_EXTRA_DIR is unset or absent
+#   legacy   flags for the PRE-milestone-4 CLI, which is how test/baseline was
+#            captured. No current build accepts --inverse-conform, so this
+#            column now describes history: it is what the reference outputs were
+#            produced with, not something a current binary can replay.
+#   modular  flags for the per-model executables -- the dialect every current
+#            build speaks -- or "-" if the case has no equivalent after the CLI
+#            change (e.g. --crop on a label model)
+#   retain   full   keep the output files (needed for tolerance comparisons)
+#            digest keep only the checksums (--export-classes writes ~1 GB)
+#   tol      maximum differing voxels; 0 means bit-exact
+#
+# @DIR@ expands to the case output directory.
+#
+# ---------------------------------------------------------------- test inputs
+#
+# CORE (tracked, always runnable -- these are the milestone gates):
+#
+#   t1_crop  256^3 at 1 mm, UINT8. Already on the grid conform targets, so
+#            conformed and native output COINCIDE for it and --inverse-conform
+#            is an identity. Good for the numerics, blind to the output space.
+#   t1_2mm   96x128x128 at 2 mm, INT16. A real acquisition, so conform has to
+#            upsample into 256^3 and the inverse reslice has to undo it, and
+#            MindGrab has to restore INT16 on the way out. This is what makes
+#            the milestone-4 output-space flip verifiable rather than merely
+#            asserted, and it segments into all 18 classes.
+#
+# A synthesized oblique input was tried first and rejected: rotating and
+# nearest-neighbour resampling t1_crop degraded it enough that model16 collapsed
+# from 18 classes to 5, which is a weak regression signal. Real data at an
+# honest resolution beats a synthetic grid.
+#
+# EXTENDED (opt-in, set BC_EXTRA_DIR; not tracked -- ~29 MB, absent from a fresh
+# clone). Covers what the two tracked inputs cannot: UINT16, extreme
+# through-plane anisotropy, thick-slice low-Z acquisitions that stress conform's
+# out-of-field padding, oblique sforms, qform/sform disagreement, and modalities
+# other than T1.
+#
+#   NOTE: model16 is a T1 parcellation model. Its output on T2w, FLAIR and fMRI
+#   is anatomically meaningless. Those cases are REGRESSION signals -- they
+#   detect change -- and must never be read as a correctness claim.
+#
+# ------------------------------------------------------------------- backends
+#
+# Every CPU case passes -cpu 0 EXPLICITLY. Without it bc_backend_select prefers
+# CUDA, then Metal, then OpenCL, so a bare invocation on this machine runs the
+# fp16 Metal path and no case would be bit-exact. -cpu 0 forces CPU and leaves
+# the thread count automatic. Modular cases add --no-turbo: CPU turbo is the
+# default and approximate; Metal cases add it for the fp16 path.
+#
+# Every model16 case pins its output space explicitly, because the two dialects
+# disagree about the default: legacy defaults to conformed and needs
+# --inverse-conform for native; modular defaults to native and needs
+# --save-conform for conformed. Pinning both spellings keeps them comparable.
+#
+# name|model|input|legacy|modular|retain|tol
+mindgrab-default|mindgrab|t1_crop|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-ct|mindgrab|t1_crop|-cpu 0 --ct|-cpu 0 --no-turbo --ct|full|0
+mindgrab-comply|mindgrab|t1_crop|-cpu 0 --comply|-cpu 0 --no-turbo --comply|full|0
+mindgrab-crop|mindgrab|t1_crop|-cpu 0 --crop|-cpu 0 --no-turbo --crop|full|0
+mindgrab-crop5|mindgrab|t1_crop|-cpu 0 --crop 5|-cpu 0 --no-turbo --crop 5|full|0
+mindgrab-border|mindgrab|t1_crop|-cpu 0 --border 5|-cpu 0 --no-turbo --border 5|full|0
+mindgrab-mask|mindgrab|t1_crop|-cpu 0 --mask @DIR@/mask.nii.gz|-cpu 0 --no-turbo --mask @DIR@/mask.nii.gz|full|0
+mindgrab-threads3|mindgrab|t1_crop|-cpu 3|-cpu 3 --no-turbo|full|0
+mindgrab-export|mindgrab|t1_crop|-cpu 0 --export-classes|-cpu 0 --no-turbo --export-classes|digest|0
+mindgrab-metal|mindgrab|t1_crop|-backend metal|-backend metal --no-turbo|full|64
+mindgrab-2mm|mindgrab|t1_2mm|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-2mm-crop|mindgrab|t1_2mm|-cpu 0 --crop|-cpu 0 --no-turbo --crop|full|0
+mindgrab-2mm-mask|mindgrab|t1_2mm|-cpu 0 --mask @DIR@/mask.nii.gz|-cpu 0 --no-turbo --mask @DIR@/mask.nii.gz|full|0
+mindgrab-2mm-border|mindgrab|t1_2mm|-cpu 0 --border 3|-cpu 0 --no-turbo --border 3|full|0
+mindgrab-2mm-metal|mindgrab|t1_2mm|-backend metal|-backend metal --no-turbo|full|64
+model16-conformed|model16chan18cls|t1_crop|-cpu 0 -m model16chan18cls|-cpu 0 --no-turbo --save-conform|full|0
+model16-native|model16chan18cls|t1_crop|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-ct|model16chan18cls|t1_crop|-cpu 0 -m model16chan18cls --ct|-cpu 0 --no-turbo --save-conform --ct|full|0
+model16-comply|model16chan18cls|t1_crop|-cpu 0 -m model16chan18cls --comply|-cpu 0 --no-turbo --save-conform --comply|full|0
+model16-crop|model16chan18cls|t1_crop|-cpu 0 -m model16chan18cls --crop|-|full|0
+model16-threads3|model16chan18cls|t1_crop|-cpu 3 -m model16chan18cls|-cpu 3 --no-turbo --save-conform|full|0
+model16-export|model16chan18cls|t1_crop|-cpu 0 -m model16chan18cls --export-classes|-cpu 0 --no-turbo --save-conform --export-classes|digest|0
+model16-metal|model16chan18cls|t1_crop|-backend metal -m model16chan18cls|-backend metal --no-turbo --save-conform|full|1024
+model16-2mm-conformed|model16chan18cls|t1_2mm|-cpu 0 -m model16chan18cls|-cpu 0 --no-turbo --save-conform|full|0
+model16-2mm-native|model16chan18cls|t1_2mm|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-2mm-metal|model16chan18cls|t1_2mm|-backend metal -m model16chan18cls|-backend metal --no-turbo --save-conform|full|1024
+mindgrab-x-t1w1mm|mindgrab|@extra/T1w1mm|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-x-t1w-arc|mindgrab|@extra/T1w_ARC2017|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-x-t1w-miccai|mindgrab|@extra/T1w_MICCAI2017|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-x-flair|mindgrab|@extra/FLAIR_MICCAI2017|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-x-t2w|mindgrab|@extra/T2w|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-x-fmri|mindgrab|@extra/fmri|-cpu 0|-cpu 0 --no-turbo|full|0
+mindgrab-x-flair-metal|mindgrab|@extra/FLAIR_MICCAI2017|-backend metal|-backend metal --no-turbo|full|64
+mindgrab-x-t1w1mm-metal|mindgrab|@extra/T1w1mm|-backend metal|-backend metal --no-turbo|full|64
+model16-x-t1w1mm|model16chan18cls|@extra/T1w1mm|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-x-t1w-arc|model16chan18cls|@extra/T1w_ARC2017|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-x-t1w-miccai|model16chan18cls|@extra/T1w_MICCAI2017|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-x-flair|model16chan18cls|@extra/FLAIR_MICCAI2017|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-x-t2w|model16chan18cls|@extra/T2w|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-x-fmri|model16chan18cls|@extra/fmri|-cpu 0 -m model16chan18cls --inverse-conform|-cpu 0 --no-turbo|full|0
+model16-x-t1w1mm-metal|model16chan18cls|@extra/T1w1mm|-backend metal -m model16chan18cls --inverse-conform|-backend metal --no-turbo|full|1024

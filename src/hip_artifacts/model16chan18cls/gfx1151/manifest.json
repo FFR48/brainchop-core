@@ -1,0 +1,4987 @@
+{
+  "schema_version": 1,
+  "abi_version": 1,
+  "model": {
+    "name": "model16chan18cls",
+    "dimension": 256,
+    "channels": 16,
+    "hidden_layers": 13,
+    "classes": 18,
+    "has_affine": true,
+    "classifier_bias": true,
+    "descriptor_sha256": "808d3ff658c37f560a2a79345f9098afc446be55750ffea4628b73014c324edb"
+  },
+  "target": {
+    "architecture": "gfx1151",
+    "num_compute_units": 40,
+    "num_chiplets": 1,
+    "wavefront_size": 32
+  },
+  "toolchain": {
+    "rocm": "7.2.2",
+    "migraphx": "2.15",
+    "tinygrad": "0.14.0",
+    "compile_options": {
+      "fp16": true,
+      "beam": 2,
+      "hybrid": true,
+      "legacy_source_commit": "953fa0b6726c879545ccc02fe64187f898717502",
+      "dynamic_lds_corrected": true
+    }
+  },
+  "sources": {
+    "scripts/build_hip_artifacts.py": "6c93dfca03108a5916a9a40a46b33e4e4e783afe5d2f8515c5b4690bb72ea936",
+    "scripts/export_hip_onnx.py": "355748cdebea9493edef904ab22275bbfa0e4315074c877cb936e8877633a15b",
+    "scripts/extract_hip_kernels.py": "a6af3197aaceaad069d82518781b26bb913774a4753198fb4f0117e33be28db4",
+    "scripts/hip_artifacts.py": "325fc3973fbb4ea90fe5aa1ddcab31cdeee69e1f445d853b76c1af7bfbfff951",
+    "src/models/model16chan18cls/model_def.h": "808d3ff658c37f560a2a79345f9098afc446be55750ffea4628b73014c324edb",
+    "src/models/model16chan18cls/model.json": "758fdd73d1d10d01342c0633e7d146a5f0ee31eb7ffee196ca9271e72dea1ffb",
+    "src/models/model16chan18cls/model_meta.json": "1b6a8ea0db3c33456038284886ee170372d92e0af048178920bdd929167a762e"
+  },
+  "bundle": {
+    "file": "kernels.bin",
+    "size": 161288,
+    "sha256": "bf5f6934ec3d2bcfbf678f3004120e1c920f816f7e2d1ed3a39ce449ef9068d8"
+  },
+  "buffers": [
+    {
+      "id": "arena",
+      "bytes": 3498307584,
+      "alignment": 4096,
+      "kind": "arena"
+    },
+    {
+      "id": "input",
+      "bytes": 33554432,
+      "alignment": 64,
+      "kind": "input"
+    },
+    {
+      "id": "output",
+      "bytes": 16777216,
+      "alignment": 64,
+      "kind": "output"
+    }
+  ],
+  "kernels": [
+    {
+      "id": "kernel.0",
+      "offset": 0,
+      "size": 4232,
+      "sha256": "077da362765bf6b9ed9e0a36946b0e625c48abae094cf8720e24b7948b489d0a",
+      "entry": "E_262144_16_2_2",
+      "symbol": "E_262144_16_2_2.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.1",
+      "offset": 4288,
+      "size": 10416,
+      "sha256": "d4b8fa3f089342689544556aefeb3a1179bf219880ecec582a0c41f6ac374192",
+      "entry": "mlir_convert_convolution_reshape_convert",
+      "symbol": "mlir_convert_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.2",
+      "offset": 14720,
+      "size": 4488,
+      "sha256": "9d466af10b57a6253509f0f1e7a80c85de6fd99d2e2b4845209bb0d316f58157",
+      "entry": "r_1048576_32_8",
+      "symbol": "r_1048576_32_8.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 128,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.3",
+      "offset": 19264,
+      "size": 4872,
+      "sha256": "303ea437063e627a6b5641c8d3ac09832236302f9622484f762a0f179d4fe1aa",
+      "entry": "r_512_8_4_2_32",
+      "symbol": "r_512_8_4_2_32.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 256,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.4",
+      "offset": 24192,
+      "size": 4312,
+      "sha256": "75680febc7f45a6f247fcceb9923747e386604558ac4c48da730ec6dc842fc9f",
+      "entry": "r_16_256",
+      "symbol": "r_16_256.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 1024,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.5",
+      "offset": 28544,
+      "size": 4872,
+      "sha256": "1dea37c0a5e9224e5748186974f0a89e5780519821e9ef8c81c39adf405dce74",
+      "entry": "r_16_65536_32_8",
+      "symbol": "r_16_65536_32_8.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 24,
+      "static_lds_bytes": 128,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.6",
+      "offset": 33472,
+      "size": 15984,
+      "sha256": "88801ffae241787bc6bb128661224d7a656f366a078566ed8a9bd36bae1eb4a9",
+      "entry": "r_2_32_16_8",
+      "symbol": "r_2_32_16_8.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 24,
+      "static_lds_bytes": 2048,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.7",
+      "offset": 49472,
+      "size": 5536,
+      "sha256": "9761a0326a73aaeeb2fa5f14c08e00d2ead4a673db2a6bd2bbb376fed085c33a",
+      "entry": "E_131072_16_16_2_4",
+      "symbol": "E_131072_16_16_2_4.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 48,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 32,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 40,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.8",
+      "offset": 55040,
+      "size": 12624,
+      "sha256": "43c33ca277cee4d7045995acc807c326ca2a1bf1cadf84aed91635ab45bc1049",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.9",
+      "offset": 67712,
+      "size": 12752,
+      "sha256": "e35349d212e9a4e76ffa072f978428930815031ad121c74230f34bc8637017b2",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.10",
+      "offset": 80512,
+      "size": 12752,
+      "sha256": "3ca14589d903b0fa45845f229937c591b4b06f494386cc6d4067f548a4d4bde2",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.11",
+      "offset": 93312,
+      "size": 12752,
+      "sha256": "bee4c6e55d60a5228f7c927bbe89f5668db4755f3898824073e6c32ef2c77e8f",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.12",
+      "offset": 106112,
+      "size": 12752,
+      "sha256": "5bb0046883f3ffd4bd41f291ac2b82753d202ee0188146df8fd17f577d3a0dc5",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.13",
+      "offset": 118912,
+      "size": 12752,
+      "sha256": "93971b3aaf1fe914628ddf66a05517a658ea52cd8faf508f586ca17821668ea1",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.14",
+      "offset": 131712,
+      "size": 12496,
+      "sha256": "1f921df206637571ff8480c25703b41c982113db8ecc04d5fae1671acedc46e2",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.15",
+      "offset": 144256,
+      "size": 6680,
+      "sha256": "9aa9f1444e17ddda86d31d1bf7a5161dee3fc13b36b8e1b917a185042d8e1f4b",
+      "entry": "mlir_convolution_broadcast_add_convert",
+      "symbol": "mlir_convolution_broadcast_add_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.16",
+      "offset": 150976,
+      "size": 5024,
+      "sha256": "2c4d104cd29fda1c1151e0c36ad893a37652165493577b1589c90d00f079174f",
+      "entry": "r_8192_32_8_2_4_18",
+      "symbol": "r_8192_32_8_2_4_18.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "kernel.17",
+      "offset": 156032,
+      "size": 5256,
+      "sha256": "5acc83af4a0cba3fb7b392e137c6a05c157a623b981780e4e02674e43bb7ff5a",
+      "entry": "r_524288_32_18",
+      "symbol": "r_524288_32_18.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 24,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    }
+  ],
+  "dispatches": [
+    {
+      "kernel": "kernel.0",
+      "grid": [
+        262144,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 0,
+          "bytes": 67108864,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "input",
+          "offset": 0,
+          "bytes": 33554432,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.1",
+      "grid": [
+        131072,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 0,
+          "bytes": 67108864,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290139136,
+          "bytes": 864,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290130944,
+          "bytes": 832,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135040,
+          "bytes": 832,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.8",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290143232,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131008,
+          "bytes": 768,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135104,
+          "bytes": 768,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.9",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290159616,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131072,
+          "bytes": 704,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135168,
+          "bytes": 704,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.10",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290176000,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131136,
+          "bytes": 640,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135232,
+          "bytes": 640,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.11",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290192384,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131200,
+          "bytes": 576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135296,
+          "bytes": 576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.12",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290208768,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131264,
+          "bytes": 512,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135360,
+          "bytes": 512,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.13",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290225152,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131328,
+          "bytes": 448,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135424,
+          "bytes": 448,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.12",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290241536,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131392,
+          "bytes": 384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135488,
+          "bytes": 384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.11",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290257920,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131456,
+          "bytes": 320,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135552,
+          "bytes": 320,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.10",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290274304,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131520,
+          "bytes": 256,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135616,
+          "bytes": 256,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.9",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290290688,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131584,
+          "bytes": 192,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135680,
+          "bytes": 192,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.8",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290307072,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131648,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135744,
+          "bytes": 128,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.14",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290323456,
+          "bytes": 13824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1140850688,
+          "bytes": 1073741824,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.2",
+      "grid": [
+        1048576,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2214592512,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.4",
+      "grid": [
+        16,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218786816,
+          "bytes": 16384,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.5",
+      "grid": [
+        65536,
+        16,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.3",
+      "grid": [
+        512,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        4,
+        2
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218807296,
+          "bytes": 4194304,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.6",
+      "grid": [
+        2,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223001600,
+          "bytes": 16384,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2218803200,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.7",
+      "grid": [
+        2097152,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126848,
+          "bytes": 128,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290126912,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290131712,
+          "bytes": 64,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290135808,
+          "bytes": 64,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.15",
+      "grid": [
+        262144,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 603979776,
+          "bytes": 536870912,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290339840,
+          "bytes": 576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290343936,
+          "bytes": 36,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290348032,
+          "bytes": 1207959552,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.16",
+      "grid": [
+        8192,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        8,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223017984,
+          "bytes": 67108864,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290348032,
+          "bytes": 1207959552,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "kernel.17",
+      "grid": [
+        524288,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "output",
+          "offset": 0,
+          "bytes": 16777216,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2290348032,
+          "bytes": 1207959552,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 2223017984,
+          "bytes": 67108864,
+          "access": "readwrite"
+        }
+      ]
+    }
+  ],
+  "weights": [
+    {
+      "tensor": "conv3d_0_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290139136,
+      "bytes": 864,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_0.scale",
+      "buffer": "arena",
+      "offset": 2290130944,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_0.bias",
+      "buffer": "arena",
+      "offset": 2290135040,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_1_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290143232,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_1.scale",
+      "buffer": "arena",
+      "offset": 2290131008,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_1.bias",
+      "buffer": "arena",
+      "offset": 2290135104,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_2_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290159616,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_2.scale",
+      "buffer": "arena",
+      "offset": 2290131072,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_2.bias",
+      "buffer": "arena",
+      "offset": 2290135168,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_3_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290176000,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_3.scale",
+      "buffer": "arena",
+      "offset": 2290131136,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_3.bias",
+      "buffer": "arena",
+      "offset": 2290135232,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_4_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290192384,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_4.scale",
+      "buffer": "arena",
+      "offset": 2290131200,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_4.bias",
+      "buffer": "arena",
+      "offset": 2290135296,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_5_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290208768,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_5.scale",
+      "buffer": "arena",
+      "offset": 2290131264,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_5.bias",
+      "buffer": "arena",
+      "offset": 2290135360,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_6_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290225152,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_6.scale",
+      "buffer": "arena",
+      "offset": 2290131328,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_6.bias",
+      "buffer": "arena",
+      "offset": 2290135424,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_7_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290241536,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_7.scale",
+      "buffer": "arena",
+      "offset": 2290131392,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_7.bias",
+      "buffer": "arena",
+      "offset": 2290135488,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_8_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290257920,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_8.scale",
+      "buffer": "arena",
+      "offset": 2290131456,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_8.bias",
+      "buffer": "arena",
+      "offset": 2290135552,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_9_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290274304,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_9.scale",
+      "buffer": "arena",
+      "offset": 2290131520,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_9.bias",
+      "buffer": "arena",
+      "offset": 2290135616,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_10_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290290688,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_10.scale",
+      "buffer": "arena",
+      "offset": 2290131584,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_10.bias",
+      "buffer": "arena",
+      "offset": 2290135680,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_11_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290307072,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_11.scale",
+      "buffer": "arena",
+      "offset": 2290131648,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_11.bias",
+      "buffer": "arena",
+      "offset": 2290135744,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_12_gn.kernel",
+      "buffer": "arena",
+      "offset": 2290323456,
+      "bytes": 13824,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_12.scale",
+      "buffer": "arena",
+      "offset": 2290131712,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_12.bias",
+      "buffer": "arena",
+      "offset": 2290135808,
+      "bytes": 64,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_final.kernel",
+      "buffer": "arena",
+      "offset": 2290339840,
+      "bytes": 576,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-in-out_to_hip-out-in"
+    },
+    {
+      "tensor": "conv3d_final.bias",
+      "buffer": "arena",
+      "offset": 2290343936,
+      "bytes": 36,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "contiguous"
+    }
+  ]
+}

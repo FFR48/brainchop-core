@@ -1,0 +1,64 @@
+name: source package validation
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: ["pyproject.toml", "packaging/**", "src/**", "test/*pypi*", ".github/workflows/pypi-source.yml"]
+concurrency:
+  group: pypi-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-zlib
+      - name: Package contracts
+        shell: bash
+        run: |
+          python -m unittest discover -s test -p 'test_pypi*.py'
+          PYTHONPATH=packaging python -c 'import brainchop_build as b; print(b.build_sdist("dist"))'
+      - name: Direct native compiler selection
+        shell: bash
+        run: python test/pypi_make_compiler.py > dist/direct-make.log 2>&1
+      - name: Real isolated pip lifecycle
+        shell: bash
+        run: python test/pypi_lifecycle.py --sdist "dist/brainchop-$(cat packaging/PYPI_VERSION).tar.gz" --output dist/install --upgrade
+      - name: GPU-free CUDA package build and loader
+        shell: bash
+        run: python test/pypi_cuda_build.py --output dist/cuda > dist/cuda-build.log 2>&1
+      - name: Installed CPU inference
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = Windows ]; then
+            dist/install/cold/Scripts/python test/pypi_installed.py
+            dist/install/cold/Scripts/python test/pypi_audit.py --output dist/install/audit.json
+          else
+            dist/install/cold/bin/python test/pypi_installed.py
+            dist/install/cold/bin/python test/pypi_audit.py --output dist/install/audit.json
+          fi
+      - name: Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-${{ matrix.os }}
+          path: |
+            dist/install/*.log
+            dist/install/*.json
+            dist/*.tar.gz
+            dist/direct-make.log
+            dist/cuda-build.log
+            dist/cuda/audit.json

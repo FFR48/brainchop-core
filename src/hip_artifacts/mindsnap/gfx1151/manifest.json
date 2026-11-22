@@ -1,0 +1,5056 @@
+{
+  "schema_version": 2,
+  "abi_version": 2,
+  "model": {
+    "name": "mindsnap",
+    "dimension": 256,
+    "channels": 24,
+    "hidden_layers": 13,
+    "classes": 104,
+    "has_affine": true,
+    "classifier_bias": true,
+    "supports_pve": false,
+    "descriptor_sha256": "84d4546e2578d062c33aca3531bd32d3fd1732e9b372eeda69e6ff8ac8502fe0"
+  },
+  "target": {
+    "architecture": "gfx1151",
+    "num_compute_units": 40,
+    "num_chiplets": 1,
+    "wavefront_size": 32
+  },
+  "toolchain": {
+    "rocm": "7.2.2",
+    "migraphx": "MIGraphX Version: 2.15.0.20250912-17-201-g0c6368a2e",
+    "tinygrad": "0.14.0",
+    "compile_options": {
+      "fp16": true,
+      "exhaustive_tune": false,
+      "backend_options": "",
+      "beam": 2,
+      "cross_compiled": false,
+      "bounded_head": {
+        "layout": "NCDHW",
+        "weight_layout": "class-channel",
+        "accumulation": "f32",
+        "workspace_bytes": 0,
+        "channels": 24,
+        "classes": 104,
+        "classifier_bias": true
+      },
+      "reused_network_bundle_sha256": "c749bb8f9f67510cf676639d14845fcb377b443912ca6f3caff2cd4b692a0de6",
+      "head_hipcc": "HIP version: 7.2.53211-671d39a71e"
+    }
+  },
+  "sources": {
+    "scripts/build_hip_artifacts.py": "6c93dfca03108a5916a9a40a46b33e4e4e783afe5d2f8515c5b4690bb72ea936",
+    "scripts/export_hip_onnx.py": "355748cdebea9493edef904ab22275bbfa0e4315074c877cb936e8877633a15b",
+    "scripts/extract_hip_kernels.py": "a6af3197aaceaad069d82518781b26bb913774a4753198fb4f0117e33be28db4",
+    "scripts/hip_artifacts.py": "325fc3973fbb4ea90fe5aa1ddcab31cdeee69e1f445d853b76c1af7bfbfff951",
+    "scripts/gen_model_capabilities.py": "f71eed42b09845c7b73bd27d988643753666e360e7498ba767a604d01a58e077",
+    "src/model_capabilities.json": "792fea16fb62987621803f4f5313c4d0b7aef3788c708c974bd3c24afcbee81c",
+    "src/model_capabilities.h": "5fd7ab1b4dc4ed9c208ff7a8808d34e23b9303567fc820cd3abe3865d38daa48",
+    "src/models/mindsnap/model_def.h": "84d4546e2578d062c33aca3531bd32d3fd1732e9b372eeda69e6ff8ac8502fe0",
+    "src/models/mindsnap/model.json": "0ff8cdb77d2da6cc5176029f3a5081b8ca53cfbc8197ce0a1f4066e660351597",
+    "src/models/mindsnap/model_meta.json": "e9e2e263535011aef8620d5633bb7154d9e8950c42b41aaa8b31f47e4cef93d3",
+    "scripts/compile_hip_support.py": "9e472ceef5bbb53c113e9e2e555aa371d13c1542c17474391ce62844ce455ed6",
+    "scripts/hip_classify.hip": "e2412987cc830a78d09a85d0d8100ea6aa37f30b72ea7d7b43fca83b20ff4a5e",
+    "scripts/hip_memory.py": "b7202638d9f96dc8d195eb9a958fcf0d79a32d500001d9da3db5568a6d11fef4"
+  },
+  "bundle": {
+    "file": "kernels.bin",
+    "size": 150856,
+    "sha256": "cba615062ec539c7fbf73784fdac17834dd6243df5e22bace239c9d96ff34530"
+  },
+  "buffers": [
+    {
+      "id": "arena",
+      "bytes": 3301388496,
+      "alignment": 4096,
+      "kind": "arena"
+    },
+    {
+      "id": "input",
+      "bytes": 33554432,
+      "alignment": 64,
+      "kind": "input"
+    },
+    {
+      "id": "output",
+      "bytes": 16777216,
+      "alignment": 64,
+      "kind": "output"
+    }
+  ],
+  "kernels": [
+    {
+      "id": "tinygrad.0",
+      "offset": 0,
+      "size": 3984,
+      "sha256": "ca43fd455f9d5029202db5837e1555f9c158acc9c6ce17c5b434c735444284f7",
+      "entry": "E_262144_16_2_2",
+      "symbol": "E_262144_16_2_2.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.1",
+      "offset": 4032,
+      "size": 10416,
+      "sha256": "89a173b8672d35cd295e03fe62c045bb7d17f1d9b89122492596fa37ba35b776",
+      "entry": "mlir_convert_convolution_reshape_convert",
+      "symbol": "mlir_convert_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "tinygrad.2",
+      "offset": 14464,
+      "size": 4232,
+      "sha256": "2387f2a2ae8b654ac425a2bab50a980c7905b9189cedfb69f839bf8dcfb980f7",
+      "entry": "r_1572864_32_8",
+      "symbol": "r_1572864_32_8.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 128,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "tinygrad.3",
+      "offset": 18752,
+      "size": 4072,
+      "sha256": "a6676c361fde224f8e714ce7684fdc24d79e548542d859c0f4e0d22c5ed9aba1",
+      "entry": "r_768_8_256",
+      "symbol": "r_768_8_256.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "tinygrad.4",
+      "offset": 22848,
+      "size": 4200,
+      "sha256": "38001301fa7d3d61536b0d81d98bffce12238061623fcbd9d14b894e86f4a045",
+      "entry": "r_8_16_3_16",
+      "symbol": "r_8_16_3_16.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 16,
+      "static_lds_bytes": 192,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "tinygrad.5",
+      "offset": 27072,
+      "size": 4512,
+      "sha256": "16ad551b46f5287cde2e1a3abb9886e45a23008b18bf774748a4cdb422385f08",
+      "entry": "r_24_65536_16_16",
+      "symbol": "r_24_65536_16_16.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 24,
+      "static_lds_bytes": 64,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "tinygrad.6",
+      "offset": 31616,
+      "size": 4200,
+      "sha256": "86afe0ff4a177910dbec74c19e6b17524cbe98bcd8e891422fc2e7f48b4c9720",
+      "entry": "r_2_6_4_256",
+      "symbol": "r_2_6_4_256.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 24,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "tinygrad.7",
+      "offset": 35840,
+      "size": 5168,
+      "sha256": "16e35bc54100605d96fae171dda2c7e0f75069b2c0cb9b757084cdafb0c6d34f",
+      "entry": "E_131072_24_16_2_4",
+      "symbol": "E_131072_24_16_2_4.kd",
+      "producer": "tinygrad",
+      "target": "gfx1151",
+      "kernarg_segment_size": 48,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 32,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 40,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.8",
+      "offset": 41024,
+      "size": 15696,
+      "sha256": "69d204f50b0bec02f0b02b98999bd6cb93d749f4107056dea69fcd5ed5c621a4",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 9216,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.9",
+      "offset": 56768,
+      "size": 15824,
+      "sha256": "0c79fad0dc8a80653d18a3e5fb6f46f2f715a9850beec344901f749254b099e4",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 9216,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.10",
+      "offset": 72640,
+      "size": 15824,
+      "sha256": "14d6cea9ea81650680d3f0422412e63623d190c05ef5c480ffc26c3a2d3ecd40",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 9216,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.11",
+      "offset": 88512,
+      "size": 13392,
+      "sha256": "5fc34794624da91a38f1acad3475f6588a5fa4c6c5ef27ea12548393027342b2",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.12",
+      "offset": 101952,
+      "size": 13392,
+      "sha256": "6e9d970e3d6848abf221c0265b39f8039d0029fe35c94b66a470640e746ea5b7",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.13",
+      "offset": 115392,
+      "size": 15952,
+      "sha256": "7ddd823dd19488cd0569837f6ff93750e7a93dd167dc9382f857b6fb807f4e56",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 9216,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "rocmlir.14",
+      "offset": 131392,
+      "size": 13008,
+      "sha256": "02dfde441d601e71e9577cce953113aeaad93fa08b4b6d5300fc1a5fed518cc2",
+      "entry": "mlir_convolution_reshape_convert",
+      "symbol": "mlir_convolution_reshape_convert.kd",
+      "producer": "rocmlir",
+      "target": "gfx1151",
+      "kernarg_segment_size": 32,
+      "static_lds_bytes": 18432,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        }
+      ]
+    },
+    {
+      "id": "hipcc.classify",
+      "offset": 144448,
+      "size": 6408,
+      "sha256": "c9b4c2093030115f1022717b696823c0adfe013bc2491de73b050c16c76ddb35",
+      "producer": "hipcc",
+      "target": "gfx1151",
+      "entry": "bc_hip_classify",
+      "symbol": "bc_hip_classify.kd",
+      "kernarg_segment_size": 288,
+      "static_lds_bytes": 0,
+      "arguments": [
+        {
+          "offset": 0,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 8,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 16,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 24,
+          "size": 8,
+          "value_kind": "global_buffer"
+        },
+        {
+          "offset": 32,
+          "size": 4,
+          "value_kind": "hidden_block_count_x"
+        },
+        {
+          "offset": 36,
+          "size": 4,
+          "value_kind": "hidden_block_count_y"
+        },
+        {
+          "offset": 40,
+          "size": 4,
+          "value_kind": "hidden_block_count_z"
+        },
+        {
+          "offset": 44,
+          "size": 2,
+          "value_kind": "hidden_group_size_x"
+        },
+        {
+          "offset": 46,
+          "size": 2,
+          "value_kind": "hidden_group_size_y"
+        },
+        {
+          "offset": 48,
+          "size": 2,
+          "value_kind": "hidden_group_size_z"
+        },
+        {
+          "offset": 50,
+          "size": 2,
+          "value_kind": "hidden_remainder_x"
+        },
+        {
+          "offset": 52,
+          "size": 2,
+          "value_kind": "hidden_remainder_y"
+        },
+        {
+          "offset": 54,
+          "size": 2,
+          "value_kind": "hidden_remainder_z"
+        },
+        {
+          "offset": 72,
+          "size": 8,
+          "value_kind": "hidden_global_offset_x"
+        },
+        {
+          "offset": 80,
+          "size": 8,
+          "value_kind": "hidden_global_offset_y"
+        },
+        {
+          "offset": 88,
+          "size": 8,
+          "value_kind": "hidden_global_offset_z"
+        },
+        {
+          "offset": 96,
+          "size": 2,
+          "value_kind": "hidden_grid_dims"
+        }
+      ]
+    }
+  ],
+  "dispatches": [
+    {
+      "kernel": "tinygrad.0",
+      "grid": [
+        262144,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 0,
+          "bytes": 67108864,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "input",
+          "offset": 0,
+          "bytes": 33554432,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.1",
+      "grid": [
+        262144,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 0,
+          "bytes": 67108864,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300982784,
+          "bytes": 1296,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300974592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300978688,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.8",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        64,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300986880,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300974688,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300978784,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.9",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        64,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301019648,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300974784,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300978880,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.10",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        64,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301052416,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300974880,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300978976,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.11",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301085184,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300974976,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979072,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.12",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301117952,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975072,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979168,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.13",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        64,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301150720,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975168,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979264,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.12",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301183488,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975264,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979360,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.11",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301216256,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975360,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979456,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.10",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        64,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301249024,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975456,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979552,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.9",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        64,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301281792,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975552,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979648,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.8",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        64,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301314560,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975648,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979744,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "rocmlir.14",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        128,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301347328,
+          "bytes": 31104,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 1677721600,
+          "bytes": 1610612736,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "write"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.2",
+      "grid": [
+        1572864,
+        1,
+        1
+      ],
+      "block": [
+        32,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3288334336,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.4",
+      "grid": [
+        8,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        3,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294625792,
+          "bytes": 24576,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.5",
+      "grid": [
+        65536,
+        24,
+        1
+      ],
+      "block": [
+        16,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.3",
+      "grid": [
+        768,
+        1,
+        1
+      ],
+      "block": [
+        8,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294654464,
+          "bytes": 6291456,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.6",
+      "grid": [
+        6,
+        2,
+        1
+      ],
+      "block": [
+        4,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 192,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300945920,
+          "bytes": 24576,
+          "access": "readwrite"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3294650368,
+          "bytes": 96,
+          "access": "readwrite"
+        }
+      ]
+    },
+    {
+      "kernel": "tinygrad.7",
+      "grid": [
+        3145728,
+        1,
+        1
+      ],
+      "block": [
+        16,
+        2,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "always",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "write"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 67108864,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970496,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300970592,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300975744,
+          "bytes": 96,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3300979840,
+          "bytes": 96,
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "kernel": "hipcc.classify",
+      "grid": [
+        65536,
+        1,
+        1
+      ],
+      "block": [
+        256,
+        1,
+        1
+      ],
+      "dynamic_lds_bytes": 0,
+      "mode": "labels",
+      "args": [
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 872415232,
+          "bytes": 805306368,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301380096,
+          "bytes": 4992,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "arena",
+          "offset": 3301388288,
+          "bytes": 208,
+          "access": "read"
+        },
+        {
+          "kind": "buffer",
+          "buffer": "output",
+          "offset": 0,
+          "bytes": 16777216,
+          "access": "write"
+        }
+      ]
+    }
+  ],
+  "weights": [
+    {
+      "tensor": "conv3d_0_gn.kernel",
+      "buffer": "arena",
+      "offset": 3300982784,
+      "bytes": 1296,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_0.scale",
+      "buffer": "arena",
+      "offset": 3300974592,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_0.bias",
+      "buffer": "arena",
+      "offset": 3300978688,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_1_gn.kernel",
+      "buffer": "arena",
+      "offset": 3300986880,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_1.scale",
+      "buffer": "arena",
+      "offset": 3300974688,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_1.bias",
+      "buffer": "arena",
+      "offset": 3300978784,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_2_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301019648,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_2.scale",
+      "buffer": "arena",
+      "offset": 3300974784,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_2.bias",
+      "buffer": "arena",
+      "offset": 3300978880,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_3_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301052416,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_3.scale",
+      "buffer": "arena",
+      "offset": 3300974880,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_3.bias",
+      "buffer": "arena",
+      "offset": 3300978976,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_4_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301085184,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_4.scale",
+      "buffer": "arena",
+      "offset": 3300974976,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_4.bias",
+      "buffer": "arena",
+      "offset": 3300979072,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_5_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301117952,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_5.scale",
+      "buffer": "arena",
+      "offset": 3300975072,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_5.bias",
+      "buffer": "arena",
+      "offset": 3300979168,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_6_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301150720,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_6.scale",
+      "buffer": "arena",
+      "offset": 3300975168,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_6.bias",
+      "buffer": "arena",
+      "offset": 3300979264,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_7_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301183488,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_7.scale",
+      "buffer": "arena",
+      "offset": 3300975264,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_7.bias",
+      "buffer": "arena",
+      "offset": 3300979360,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_8_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301216256,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_8.scale",
+      "buffer": "arena",
+      "offset": 3300975360,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_8.bias",
+      "buffer": "arena",
+      "offset": 3300979456,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_9_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301249024,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_9.scale",
+      "buffer": "arena",
+      "offset": 3300975456,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_9.bias",
+      "buffer": "arena",
+      "offset": 3300979552,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_10_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301281792,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_10.scale",
+      "buffer": "arena",
+      "offset": 3300975552,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_10.bias",
+      "buffer": "arena",
+      "offset": 3300979648,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_11_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301314560,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_11.scale",
+      "buffer": "arena",
+      "offset": 3300975648,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_11.bias",
+      "buffer": "arena",
+      "offset": 3300979744,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_12_gn.kernel",
+      "buffer": "arena",
+      "offset": 3301347328,
+      "bytes": 31104,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-kx-ky-kz-in-out_to_hip-out-in-kz-ky-kx"
+    },
+    {
+      "tensor": "affine_12.scale",
+      "buffer": "arena",
+      "offset": 3300975744,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "diagonal"
+    },
+    {
+      "tensor": "affine_12.bias",
+      "buffer": "arena",
+      "offset": 3300979840,
+      "bytes": 96,
+      "source_dtype": "f32",
+      "target_dtype": "f32",
+      "layout": "contiguous"
+    },
+    {
+      "tensor": "conv3d_final.kernel",
+      "buffer": "arena",
+      "offset": 3301380096,
+      "bytes": 4992,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "tfjs-in-out_to_hip-out-in"
+    },
+    {
+      "tensor": "conv3d_final.bias",
+      "buffer": "arena",
+      "offset": 3301388288,
+      "bytes": 208,
+      "source_dtype": "f32",
+      "target_dtype": "f16",
+      "layout": "contiguous"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "cli_name": "16chan18cls",
+  "description": "18-class brain segmentation (16-channel, MindMap v3.5)",
+  "output_kind": "labels",
+  "c_prefix": "MODEL16",
+  "_comment_gelu": "model.json declares activation 'gelu' here and for mindgrab, but the reference implementations differ. This model computes GELU as x / (1 + exp2(-2.302208198144325 * u)) via an inlined exp2 polynomial (mn_model16_gelu). Substituting MindGrab's rational tanh form breaks bit-exact parity.",
+  "gelu": "exp2_sigmoid",
+  "loader_transposes_kernel": false,
+  "classifier_bias": true,
+  "_comment_norm": "Quantile normalization at 5/95 with no denominator guard and no clamping, using plain rank selection rather than the interpolated form MindGrab uses. Not expressible in model.json.",
+  "norm": {
+    "q_low": 0.05,
+    "q_high": 0.95,
+    "denom_eps": 0.0,
+    "clamp": false,
+    "quantile_mode": "rank"
+  },
+  "_comment_capabilities": "--mask and --border are mask-model options and are not offered. --crop is not offered: the receptive field is exactly 255 on a 256^3 volume, so the conv zero-pads outside the ROI and the large-dilation layers read mostly padding. Upstream states this model family cannot crop. Measured 1.0012% label change at the default 2% crop on test/t1_crop.nii.gz, and unbounded on tighter crops.",
+  "capabilities": {
+    "crop": false,
+    "mask": false,
+    "border": false,
+    "save_conform": true,
+    "ct": true,
+    "comply": true,
+    "export_classes": true
+  }
+}

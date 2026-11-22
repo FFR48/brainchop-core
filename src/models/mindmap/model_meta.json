@@ -1,0 +1,28 @@
+{
+  "cli_name": "mindmap",
+  "description": "18-class brain segmentation (24-channel, MindMap-18 v4.0 Gold)",
+  "output_kind": "labels",
+  "c_prefix": "MINDMAP",
+  "_comment_gelu": "Same flavour as model16chan18cls, and the two shipped flavours are the same mathematical function by different numerical routes: 2.302208198144325 * ln2 == 2*sqrt(2/pi) exactly, so x/(1+exp2(-2.302208198144325*u)) and 0.5x(1+tanh(sqrt(2/pi)*u)) agree. They are not interchangeable for BIT-exactness, which is what picks one. exp2_sigmoid is chosen because this model is model16's architecture at 24 channels and shares its code path.",
+  "gelu": "exp2_sigmoid",
+  "loader_transposes_kernel": false,
+  "classifier_bias": true,
+  "_comment_norm": "Verified against ../brainchop-test/tensor-utils.js rather than inherited: quantileNormalizeVolumeData defaults to 0.05/0.95 and computes (x-qmin)/(qmax-qmin) with no denominator guard and no clamp, and calculateQuantiles selects by plain rank (floor(n*q_low), ceil(n*q_high)-1) with no interpolation.",
+  "norm": {
+    "q_low": 0.05,
+    "q_high": 0.95,
+    "denom_eps": 0.0,
+    "clamp": false,
+    "quantile_mode": "rank"
+  },
+  "_comment_capabilities": "Identical dilation ladder to model16chan18cls, so the receptive field still spans the whole 256^3 volume and --crop would feed the large-dilation layers mostly zero padding. --mask and --border apply only to a mask model.",
+  "capabilities": {
+    "crop": false,
+    "mask": false,
+    "border": false,
+    "save_conform": true,
+    "ct": true,
+    "comply": true,
+    "export_classes": true
+  }
+}

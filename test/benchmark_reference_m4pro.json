@@ -1,0 +1,171 @@
+{
+  "host": {
+    "captured": "2026-08-03",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "cpu": "Apple M4 Pro",
+    "gpu": "Apple M4 Pro (integrated, 14 CPU cores: 10P + 4E)",
+    "cc": null,
+    "commit": "919fbab"
+  },
+  "repeats": 3,
+  "protocol": {
+    "statistic": "median",
+    "warmups": 1,
+    "single_run": [
+      "cpu",
+      "cpuN1"
+    ]
+  },
+  "rows": [
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "cpuN1",
+      "ms": 49918.4,
+      "cpu_mb": 2276.7,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "cpu",
+      "ms": 5521.2,
+      "cpu_mb": 2277.0,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "metal",
+      "ms": 1572.4,
+      "cpu_mb": 376.0,
+      "gpu_mb": null,
+      "voxels_differ": 37
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "webgpu",
+      "ms": 2360.0,
+      "cpu_mb": null,
+      "gpu_mb": null,
+      "voxels_differ": 37
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "cpuN1",
+      "ms": 49195.8,
+      "cpu_mb": 2227.8,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "cpu",
+      "ms": 5324.2,
+      "cpu_mb": 2228.3,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "metal",
+      "ms": 1409.0,
+      "cpu_mb": 327.2,
+      "gpu_mb": null,
+      "voxels_differ": 4
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "webgpu",
+      "ms": 1990.0,
+      "cpu_mb": null,
+      "gpu_mb": null,
+      "voxels_differ": 4
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "cpuN1",
+      "ms": 27001.2,
+      "cpu_mb": 2273.5,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "cpu",
+      "ms": 3146.9,
+      "cpu_mb": 2274.0,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "metal",
+      "ms": 1020.3,
+      "cpu_mb": 373.8,
+      "gpu_mb": null,
+      "voxels_differ": 654
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "webgpu",
+      "ms": 1570.0,
+      "cpu_mb": null,
+      "gpu_mb": null,
+      "voxels_differ": 682
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "cpuN1",
+      "ms": 26834.5,
+      "cpu_mb": 2225.5,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "cpu",
+      "ms": 2969.3,
+      "cpu_mb": 2226.0,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "metal",
+      "ms": 859.5,
+      "cpu_mb": 322.9,
+      "gpu_mb": null,
+      "voxels_differ": 90
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "webgpu",
+      "ms": 1190.0,
+      "cpu_mb": null,
+      "gpu_mb": null,
+      "voxels_differ": 88
+    }
+  ],
+  "notes": {
+    "webgpu": "Measured by hand, NOT by benchmark.py: there is no native WebGPU build, so `-backend webgpu` on the executables does nothing. These are the wasm module in Chromium, timed IN-MODULE (callMain to exit) by test/wasm_gpu_run.mjs, median of 3 after one warm-up. That basis excludes process startup and gzip, which the native rows include; measured separately, that difference is only 20-70 ms (metal on uncompressed .nii: 1.51 / 1.39 / 0.95 / 0.84 s), so the columns are comparable to about 5%. cpu_mb is null because the allocation lives in the browser, not in a process this harness can sample.",
+    "cpu_rows": "The all-thread cpu rows repeat to about +/-10% on this machine; a re-measurement gave 5.48 / 5.70 / 3.43 / 3.30 s against the 5.52 / 5.32 / 3.15 / 2.97 s recorded here. Treat them as approximate.",
+    "not_a_regression_gate": "This capture exists to characterise Apple silicon alongside the Linux CUDA/OpenCL reference in benchmark_reference.json. Compare against it with: make benchmark-compare BENCH_REFERENCE=../test/benchmark_reference_m4pro.json"
+  }
+}

@@ -1,0 +1,307 @@
+name: release
+
+# Builds sdist, prebuilt portable wheels (win_amd64, macosx_arm64, linux_x86_64),
+# standalone native release archives with SHA-256 checksums (for GitHub Releases
+# and Homebrew), and the @brainchop/core npm tarball (pure-JS WebGPU V4 +
+# Emscripten WebGL2 & threaded-CPU WASM fallbacks).
+#
+# Tag push (`v1.0.0`) or manual dispatch with `publish_pypi`/`publish_npm`
+# publishes via OIDC Trusted Publishing (or `NPM_TOKEN` fallback for npm).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      publish_pypi:
+        description: 'Publish wheels and sdist to PyPI via OIDC'
+        type: boolean
+        default: false
+      publish_npm:
+        description: 'Publish @brainchop/core tarball to npm'
+        type: boolean
+        default: false
+      create_github_release:
+        description: 'Attach release artifacts to a GitHub Release'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  sdist:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run PyPI unit tests
+        run: python -m unittest discover -s test -p 'test_pypi*.py'
+      - name: Build deterministic sdist
+        run: |
+          mkdir -p dist/pypi
+          PYTHONPATH=packaging python -c 'import brainchop_build as b; print(b.build_sdist("dist/pypi"))'
+          ls -lh dist/pypi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-sdist
+          path: dist/pypi/*.tar.gz
+
+  wheel-windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-zlib
+      - name: Build prebuilt win_amd64 wheel (target=all, AVX2+FMA)
+        shell: pwsh
+        run: |
+          $env:PATH = "C:\msys64\ucrt64\bin;C:\msys64\usr\bin;$env:PATH"
+          mkdir -Force dist/pypi | Out-Null
+          python -m pip wheel . --no-build-isolation --no-deps `
+            --config-settings brainchop.target=all `
+            --config-settings brainchop.cpu=auto `
+            -w dist/pypi
+          Get-ChildItem dist/pypi
+      - name: Build native Windows zip archive
+        shell: pwsh
+        run: |
+          $env:PATH = "C:\msys64\ucrt64\bin;C:\msys64\usr\bin;$env:PATH"
+          $ver = (Get-Content packaging/PYPI_VERSION -Raw).Trim()
+          make -C src VERSION=$ver OPENCL=0 WINDOWS_STATIC=1 ZSTD=0 native-package
+          Get-ChildItem dist/brainchop-*.zip*
+      - name: Smoke-test wheel on compiler-free PATH
+        shell: pwsh
+        run: |
+          $whl = (Get-ChildItem dist/pypi/*.whl | Select-Object -First 1).FullName
+          $venv = Join-Path $PWD "bc-release-venv"
+          python -m venv "$venv"
+          $env:PATH = "C:\Windows\System32;C:\Windows;C:\Windows\System32\Wbem;$venv\Scripts"
+          $env:MSYS2_ROOT = "C:\nonexistent-msys2"
+          & "$venv\Scripts\pip.exe" install --no-deps --no-index "$whl"
+          & "$venv\Scripts\brainchop.exe" --version
+          & "$venv\Scripts\brainchop.exe" --list
+          & "$venv\Scripts\python.exe" -c "import brainchop as bc; assert 'mindmap' in bc.list_models()"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-win_amd64
+          path: |
+            dist/pypi/*.whl
+            dist/brainchop-*.zip
+            dist/brainchop-*.zip.sha256
+
+  wheel-linux:
+    runs-on: ubuntu-24.04
+    container:
+      image: quay.io/pypa/manylinux_2_28_x86_64
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build prebuilt manylinux_2_28_x86_64 wheel (target=all, AVX2+FMA)
+        env:
+          BRAINCHOP_PLATFORM_TAG: manylinux_2_28_x86_64
+        run: |
+          mkdir -p dist/pypi
+          /opt/python/cp312-cp312/bin/python -m pip wheel . --no-build-isolation --no-deps \
+            --config-settings brainchop.target=all \
+            --config-settings brainchop.cpu=auto \
+            -w dist/pypi
+          ls -lh dist/pypi
+      - name: Build native Linux tar.gz archive (glibc 2.28 compatible)
+        run: |
+          export PATH="/opt/python/cp312-cp312/bin:$PATH"
+          VER=$(cat packaging/PYPI_VERSION | tr -d '[:space:]')
+          make -C src VERSION="$VER" OPENCL=0 ZSTD=0 native-package
+          ls -lh dist/brainchop-*.tar.gz*
+          {
+            echo "### Linux x86_64 Native Tarball (Homebrew)"
+            echo '```'
+            cat dist/brainchop-*-linux-*.tar.gz.sha256
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-linux_x86_64
+          path: |
+            dist/pypi/*.whl
+            dist/brainchop-*.tar.gz
+            dist/brainchop-*.tar.gz.sha256
+
+  wheel-macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build prebuilt macosx_arm64 wheel (target=all)
+        env:
+          MACOSX_DEPLOYMENT_TARGET: '13.2'
+        run: |
+          mkdir -p dist/pypi
+          python -m pip wheel . --no-build-isolation --no-deps \
+            --config-settings brainchop.target=all \
+            --config-settings brainchop.cpu=baseline \
+            -w dist/pypi
+          ls -lh dist/pypi
+      - name: Build native macOS arm64 tarball (for Homebrew)
+        env:
+          MACOSX_DEPLOYMENT_TARGET: '13.2'
+        run: |
+          VER=$(cat packaging/PYPI_VERSION | tr -d '[:space:]')
+          make -C src clean
+          make -C src -j4 ZSTD=0 models dispatcher
+          STAGE="dist/brainchop-${VER}-macos-arm64"
+          mkdir -p "$STAGE"
+          cp src/brainchop src/brainchop-mindgrab src/brainchop-mindmap-fast src/brainchop-mindmap src/brainchop-mindsnap "$STAGE/"
+          cp LICENSE THIRD_PARTY_NOTICES.md packaging/README-macOS.txt "$STAGE/"
+          tar -C dist -czf "${STAGE}.tar.gz" "$(basename "$STAGE")"
+          (cd dist && shasum -a 256 "$(basename "$STAGE").tar.gz" > "$(basename "$STAGE").tar.gz.sha256")
+          ls -lh dist/brainchop-*-macos-arm64.tar.gz*
+          {
+            echo "### macOS arm64 Native Tarball (Homebrew)"
+            echo '```'
+            cat dist/brainchop-*-macos-arm64.tar.gz.sha256
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-macos_arm64
+          path: |
+            dist/pypi/*.whl
+            dist/brainchop-*-macos-arm64.tar.gz
+            dist/brainchop-*-macos-arm64.tar.gz.sha256
+
+  npm-package:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'js/package-lock.json'
+      - name: Build WASM fallbacks, bundle @brainchop/core, test, and pack
+        run: |
+          mkdir -p dist/npm
+          cd js
+          npm ci
+          npm run makeWasm
+          npm run build
+          npm run test:unit
+          npm pack --pack-destination ../dist/npm
+          ls -lh ../dist/npm
+          (cd ../dist/npm && sha256sum *.tgz > checksums-npm.sha256)
+          {
+            echo "### npm Tarball (@brainchop/core)"
+            echo '```'
+            cat ../dist/npm/checksums-npm.sha256
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-npm
+          path: dist/npm/*.tgz
+          if-no-files-found: error
+
+  publish-pypi:
+    if: ${{ github.event_name == 'push' || inputs.publish_pypi }}
+    needs: [sdist, wheel-windows, wheel-linux, wheel-macos]
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/p/brainchop
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: dist/all
+          merge-multiple: true
+      - name: Stage PyPI files
+        run: |
+          mkdir -p dist/upload
+          cp dist/all/*.whl dist/upload/
+          cp dist/all/brainchop-[0-9]*.tar.gz dist/upload/ || true
+          # Keep only the sdist tarball (exclude native -linux-/-macos- archives)
+          rm -f dist/upload/*-linux-*.tar.gz dist/upload/*-macos-*.tar.gz
+          ls -lh dist/upload
+      - name: Publish to PyPI via Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/upload/
+
+  publish-npm:
+    if: ${{ github.event_name == 'push' || inputs.publish_npm }}
+    needs: [npm-package]
+    runs-on: ubuntu-24.04
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/@brainchop/core
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-npm
+          path: dist/npm
+      - name: Publish @brainchop/core to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            # npm OIDC Trusted Publishing requires npm >= 11.5.1 and no empty _authToken.
+            npm install -g npm@latest
+            rm -f "${NPM_CONFIG_USERCONFIG:-$HOME/.npmrc}"
+            unset NODE_AUTH_TOKEN
+          fi
+          npm publish dist/npm/*.tgz --provenance --access public
+
+  github-release:
+    if: ${{ github.event_name == 'push' || inputs.create_github_release }}
+    needs: [sdist, wheel-windows, wheel-linux, wheel-macos, npm-package]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: dist/release
+          merge-multiple: true
+      - name: Print Homebrew tarball SHA-256 checksums
+        run: |
+          {
+            echo "### Homebrew Tarball SHA-256 Checksums"
+            echo '```'
+            cat dist/release/brainchop-*-macos-arm64.tar.gz.sha256 dist/release/brainchop-*-linux-*.tar.gz.sha256
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          cat dist/release/brainchop-*-macos-arm64.tar.gz.sha256 dist/release/brainchop-*-linux-*.tar.gz.sha256
+      - name: Create GitHub Release with native archives, wheels, and npm tarball
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [ "${GITHUB_EVENT_NAME}" != "push" ]; then
+            TAG="v$(cat packaging/PYPI_VERSION | tr -d '[:space:]')"
+          fi
+          gh release create "$TAG" dist/release/* \
+            --title "BrainChop Core ${TAG}" \
+            --generate-notes \
+            --draft

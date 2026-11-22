@@ -1,0 +1,30 @@
+{
+  "cli_name": "mindgrab",
+  "description": "skull stripping in any modality",
+  "output_kind": "mask",
+  "c_prefix": "MINDGRAB",
+  "_comment_gelu": "model.json declares activation 'gelu' for this model AND for model16chan18cls, but the two reference implementations are different functions. MindGrab computes GELU through a rational tanh approximation (mn_mindgrab_gelu). Substituting model16's exp2 sigmoid form breaks bit-exact parity with the tinygrad reference.",
+  "gelu": "tanh_rational",
+  "_comment_loader_transpose": "brainchopc.c transposes MindGrab's TFJS [D,H,W] taps to NIfTI [x,y,z] once at load, so every backend sees the same order and meshnet_cpu_pack_kernel must not transpose again. model16 is transposed at pack time instead. Unifying the two would touch the Metal and accelerator weight packers as well, so the asymmetry is declared here rather than hidden.",
+  "loader_transposes_kernel": true,
+  "_comment_classifier_bias": "Apply the trained output/bias from model.bin on every backend, matching the complete checkpoint.",
+  "classifier_bias": true,
+  "_comment_norm": "Quantile normalization at 2/98 with a 1e-3 guard added to the denominator, then clamped to [0,1]. quantile_mode 'linear' is the interpolated rank used by bc_accel_normalize_input for this model; model16 uses the plain rank form instead. None of this appears in model.json.",
+  "norm": {
+    "q_low": 0.02,
+    "q_high": 0.98,
+    "denom_eps": 0.001,
+    "clamp": true,
+    "quantile_mode": "linear"
+  },
+  "_comment_capabilities": "--mask and --border are meaningful only for a model whose output is a brain mask. --save-conform is not offered: MindGrab's output IS the original input image with non-brain voxels floored, so it is inherently in native space. Cropping is not free here either -- measured 0.23-0.40% output change -- but this model's receptive field degrades more gracefully than model16's.",
+  "capabilities": {
+    "crop": true,
+    "mask": true,
+    "border": true,
+    "save_conform": false,
+    "ct": true,
+    "comply": true,
+    "export_classes": true
+  }
+}

@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+title: "BrainChop Core"
+message: "If you use BrainChop Core in your research, please cite both this software and the BrainChop JOSS paper."
+type: software
+authors:
+  - family-names: Plis
+    given-names: Sergey
+    affiliation: "Tri-Institutional Center for Translational Research in Neuroimaging and Data Science (TReNDS), Georgia State University"
+  - family-names: Rorden
+    given-names: Chris
+    affiliation: "University of South Carolina"
+repository-code: "https://github.com/neuroneural/brainchop-core"
+url: "https://brainchop.org"
+license: MIT
+version: "1.0.0"
+keywords:
+  - neuroimaging
+  - MRI
+  - brain-segmentation
+  - skull-stripping
+  - MeshNet
+  - WebGPU
+  - NIfTI
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Masoud
+      given-names: Mohamed
+    - family-names: Hu
+      given-names: Farfalla
+    - family-names: Plis
+      given-names: Sergey
+  title: "Brainchop: In-browser MRI volumetric segmentation and rendering"
+  journal: "Journal of Open Source Software"
+  volume: 8
+  issue: 83
+  start: 5098
+  year: 2023
+  doi: "10.21105/joss.05098"

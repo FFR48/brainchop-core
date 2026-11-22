@@ -1,0 +1,87 @@
+{
+  "name": "@brainchop/core",
+  "version": "1.0.0",
+  "description": "Browser MeshNet brain segmentation (MindGrab skull stripping, 18- and 104-class parcellation, GM/WM/CSF fractions) on pure-JS WebGPU V4, with WebGL2 and threaded-CPU WASM fallbacks",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neuroneural/brainchop-core.git",
+    "directory": "js"
+  },
+  "homepage": "https://brainchop.org",
+  "bugs": {
+    "url": "https://github.com/neuroneural/brainchop-core/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mindgrab": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/mindgrab.js"
+    },
+    "./mindmap-fast": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/mindmap-fast.js"
+    },
+    "./16chan18cls": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/16chan18cls.js"
+    },
+    "./mindmap": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/mindmap.js"
+    },
+    "./mindsnap": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/mindsnap.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "THIRD_PARTY_NOTICES.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "makeWasm": "make wasm-gl -C ../src WASM_GL_PHASE1=0 && make wasm -C ../src",
+    "copyModels": "node scripts/copy-models.mjs",
+    "copyWasm": "node scripts/copy-wasm.mjs",
+    "types": "tsc -p tsconfig.json --emitDeclarationOnly",
+    "bundle": "node esbuild.config.mjs",
+    "build:webgpu": "npm run copyModels && npm run types && npm run bundle",
+    "build": "npm run copyModels && npm run copyWasm && npm run types && npm run bundle",
+    "prepublishOnly": "npm run build",
+    "prepack": "node -e \"const fs=require('fs');fs.copyFileSync('../THIRD_PARTY_NOTICES.md','THIRD_PARTY_NOTICES.md');fs.copyFileSync('../LICENSE','LICENSE')\"",
+    "test:unit": "node --test test/webgpu_v4_unit.test.mjs",
+    "test:webgpu": "node test/webgpu_v4_e2e.mjs",
+    "test": "node test/segment.test.mjs"
+  },
+  "dependencies": {
+    "@webgpu/types": "^0.1.71"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "brainchop",
+    "meshnet",
+    "neuroimaging",
+    "nifti",
+    "segmentation",
+    "skull-stripping",
+    "webgl2",
+    "webgpu"
+  ]
+}

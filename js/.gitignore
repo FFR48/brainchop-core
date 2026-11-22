@@ -1,0 +1,4 @@
+node_modules/
+dist/
+*.tgz
+THIRD_PARTY_NOTICES.md

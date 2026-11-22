@@ -1,0 +1,28 @@
+{
+  "cli_name": "mindsnap",
+  "description": "104-class Desikan-Killiany parcellation (24-channel, MindSnap-104 v4.0 Gold)",
+  "output_kind": "labels",
+  "c_prefix": "MINDSNAP",
+  "_comment_gelu": "mindmap's backbone at 104 classes, so it shares mindmap's exp2_sigmoid code path. Mathematically the tanh GELU tinygrad computes; see .claude/rules/models.md on the two flavours.",
+  "gelu": "exp2_sigmoid",
+  "loader_transposes_kernel": false,
+  "classifier_bias": true,
+  "_comment_norm": "Aligned with MindSnap-104 v4.0 Gold training (_gpu_bc_accel_q05_q95_from_u8) and ../brainchop-test/tensor-utils.js: 0.05/0.95 plain-rank quantile normalization with no denominator guard and no clamp, matching model16chan18cls and mindmap.",
+  "norm": {
+    "q_low": 0.05,
+    "q_high": 0.95,
+    "denom_eps": 0.0,
+    "clamp": false,
+    "quantile_mode": "rank"
+  },
+  "_comment_capabilities": "Same dilation ladder as mindmap (receptive field spans the volume), so --crop is not offered. --mask and --border are mask-model options.",
+  "capabilities": {
+    "crop": false,
+    "mask": false,
+    "border": false,
+    "save_conform": true,
+    "ct": true,
+    "comply": true,
+    "export_classes": true
+  }
+}

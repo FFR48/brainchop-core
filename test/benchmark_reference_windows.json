@@ -1,0 +1,256 @@
+{
+  "host": {
+    "captured": "2026-09-30",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "cpu": "AMD Ryzen 9 7950X 16-Core Processor",
+    "gpu": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "cc": "clang version 22.1.8 (https://github.com/msys2/MINGW-packages 6e4e79c2f86eeb534e324e583f2057dc9fd5ecab)",
+    "commit": "b76dcfe"
+  },
+  "repeats": 3,
+  "protocol": {
+    "statistic": "median",
+    "warmups": 1,
+    "single_run": [
+      "cpu",
+      "cpuN1"
+    ]
+  },
+  "rows": [
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "cpuN1",
+      "ms": 42321.9,
+      "cpu_mb": 2200.6,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "cpu",
+      "ms": 4134.4,
+      "cpu_mb": 2201.5,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "cuda",
+      "ms": 762.0,
+      "cpu_mb": 356.0,
+      "gpu_mb": null,
+      "voxels_differ": 36
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_crop",
+      "backend": "opencl",
+      "ms": 1764.4,
+      "cpu_mb": 394.7,
+      "gpu_mb": null,
+      "voxels_differ": 31
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "cpuN1",
+      "ms": 41567.2,
+      "cpu_mb": 2142.6,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "cpu",
+      "ms": 4022.0,
+      "cpu_mb": 2143.5,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "cuda",
+      "ms": 606.2,
+      "cpu_mb": 298.1,
+      "gpu_mb": null,
+      "voxels_differ": 4
+    },
+    {
+      "model": "mindgrab",
+      "image": "t1_2mm",
+      "backend": "opencl",
+      "ms": 1663.3,
+      "cpu_mb": 337.1,
+      "gpu_mb": null,
+      "voxels_differ": 4
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "cpuN1",
+      "ms": 23809.6,
+      "cpu_mb": 2199.9,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "cpu",
+      "ms": 2717.4,
+      "cpu_mb": 2200.7,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "cuda",
+      "ms": 660.3,
+      "cpu_mb": 356.8,
+      "gpu_mb": null,
+      "voxels_differ": 469
+    },
+    {
+      "model": "model16",
+      "image": "t1_crop",
+      "backend": "opencl",
+      "ms": 1533.4,
+      "cpu_mb": 394.4,
+      "gpu_mb": null,
+      "voxels_differ": 460
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "cpuN1",
+      "ms": 23395.0,
+      "cpu_mb": 2141.9,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "cpu",
+      "ms": 2520.4,
+      "cpu_mb": 2142.7,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "cuda",
+      "ms": 491.0,
+      "cpu_mb": 298.8,
+      "gpu_mb": null,
+      "voxels_differ": 59
+    },
+    {
+      "model": "model16",
+      "image": "t1_2mm",
+      "backend": "opencl",
+      "ms": 1400.3,
+      "cpu_mb": 336.0,
+      "gpu_mb": null,
+      "voxels_differ": 69
+    },
+    {
+      "model": "mindmap",
+      "image": "t1_crop",
+      "backend": "cpuN1",
+      "ms": 87230.4,
+      "cpu_mb": 3223.0,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindmap",
+      "image": "t1_crop",
+      "backend": "cpu",
+      "ms": 5212.4,
+      "cpu_mb": 3223.8,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "mindmap",
+      "image": "t1_crop",
+      "backend": "cuda",
+      "ms": 1197.7,
+      "cpu_mb": 359.4,
+      "gpu_mb": null,
+      "voxels_differ": 507
+    },
+    {
+      "model": "mindmap",
+      "image": "t1_2mm",
+      "backend": "cpuN1",
+      "ms": 87128.9,
+      "cpu_mb": 3165.0,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindmap",
+      "image": "t1_2mm",
+      "backend": "cpu",
+      "ms": 5131.3,
+      "cpu_mb": 3165.8,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "mindmap",
+      "image": "t1_2mm",
+      "backend": "cuda",
+      "ms": 1020.7,
+      "cpu_mb": 301.4,
+      "gpu_mb": null,
+      "voxels_differ": 67
+    },
+    {
+      "model": "mindsnap",
+      "image": "t1_crop",
+      "backend": "cpuN1",
+      "ms": 88042.2,
+      "cpu_mb": 3223.0,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindsnap",
+      "image": "t1_crop",
+      "backend": "cpu",
+      "ms": 5226.0,
+      "cpu_mb": 3224.1,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    },
+    {
+      "model": "mindsnap",
+      "image": "t1_2mm",
+      "backend": "cpuN1",
+      "ms": 92531.4,
+      "cpu_mb": 3165.0,
+      "gpu_mb": null,
+      "voxels_differ": 0
+    },
+    {
+      "model": "mindsnap",
+      "image": "t1_2mm",
+      "backend": "cpu",
+      "ms": 5006.5,
+      "cpu_mb": 3165.8,
+      "gpu_mb": null,
+      "voxels_differ": "ref"
+    }
+  ]
+}

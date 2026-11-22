@@ -1,0 +1,110 @@
+name: prebuilt wheels
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Target platform to build prebuilt target=all wheel'
+        type: choice
+        default: windows
+        options:
+          - windows
+          - linux
+          - macos
+          - all
+  pull_request:
+    paths:
+      - '.github/workflows/prebuilt-wheels.yml'
+      - 'packaging/brainchop_cli/adaptive.py'
+      - 'src/backend.c'
+
+permissions:
+  contents: read
+
+jobs:
+  wheel-windows:
+    if: ${{ github.event_name == 'pull_request' || inputs.platform == 'windows' || inputs.platform == 'all' }}
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-zlib
+      - name: Build prebuilt win_amd64 wheel (target=all, AVX2+FMA CPU + CUDA + opt-in OpenCL)
+        shell: bash
+        run: |
+          mkdir -p dist/wheels
+          python -m pip wheel . --no-build-isolation --no-deps \
+            --config-settings brainchop.target=all \
+            --config-settings brainchop.cpu=auto \
+            -w dist/wheels
+          ls -lh dist/wheels
+      - name: Verify compiler-free installation and CLI execution (MSYS2 stripped from PATH)
+        shell: pwsh
+        run: |
+          $whl = (Get-ChildItem dist/wheels/*.whl | Select-Object -First 1).FullName
+          $venv = Join-Path $PWD "bc-clean-venv"
+          python -m venv "$venv"
+          $env:PATH = "C:\Windows\System32;C:\Windows;C:\Windows\System32\Wbem;$venv\Scripts"
+          $env:MSYS2_ROOT = "C:\nonexistent-msys2"
+          & "$venv\Scripts\pip.exe" install --no-deps --no-index "$whl"
+          & "$venv\Scripts\brainchop.exe" --list
+          & "$venv\Scripts\brainchop.exe" -m mindmap-fast --save-conform -o "$PWD\clean-m16.nii.gz" test/t1_crop.nii.gz
+          & "$venv\Scripts\python.exe" test/nii_dice.py test/labels16.nii.gz "$PWD\clean-m16.nii.gz" 0.995 99.5
+      - name: Upload win_amd64 wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-win_amd64
+          path: dist/wheels/*.whl
+
+  wheel-linux:
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.platform == 'linux' || inputs.platform == 'all') }}
+    runs-on: ubuntu-24.04
+    container:
+      image: quay.io/pypa/manylinux_2_28_x86_64
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build prebuilt manylinux_2_28_x86_64 wheel (target=all, AVX2+FMA)
+        env:
+          BRAINCHOP_PLATFORM_TAG: manylinux_2_28_x86_64
+        run: |
+          mkdir -p dist/wheels
+          /opt/python/cp312-cp312/bin/python -m pip wheel . --no-build-isolation --no-deps \
+            --config-settings brainchop.target=all \
+            --config-settings brainchop.cpu=auto \
+            -w dist/wheels
+          ls -lh dist/wheels
+      - name: Upload manylinux_2_28_x86_64 wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-manylinux_2_28_x86_64
+          path: dist/wheels/*.whl
+
+  wheel-macos:
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.platform == 'macos' || inputs.platform == 'all') }}
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build prebuilt macosx_14_0_arm64 wheel (target=all, minos 13.2)
+        env:
+          MACOSX_DEPLOYMENT_TARGET: '13.2'
+        run: |
+          mkdir -p dist/wheels
+          python -m pip wheel . --no-build-isolation --no-deps \
+            --config-settings brainchop.target=all \
+            --config-settings brainchop.cpu=baseline \
+            -w dist/wheels
+          ls -lh dist/wheels
+      - name: Upload macosx_arm64 wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheel-macosx_arm64
+          path: dist/wheels/*.whl

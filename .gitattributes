@@ -1,0 +1,46 @@
+# Line endings.
+#
+# Without this file, a Windows checkout gets CRLF in every text file, because
+# core.autocrlf=true is what the Git for Windows installer sets by default and
+# there was nothing here to override it. For most projects that is cosmetic. For
+# this one it is fatal, and fatal in the worst way -- `git status` stays clean,
+# because git normalizes the CRs back out on the way into the index, so the
+# breakage exists only in the working tree and is invisible to every git command
+# anyone would think to run.
+#
+# What it breaks:
+#
+#   src/Makefile   GNU make takes the CR as part of the value. X86_ISA becomes
+#                  "x86-64-v3\r" and the -march probe fails, silently costing the
+#                  2x that CLAUDE.md documents; BC_WINDOWS becomes "1\r" and
+#                  compares unequal to "1", switching off every Windows branch;
+#                  and each recipe line reaches sh with a trailing CR, which
+#                  reports as the memorable `$'\r': command not found`.
+#   *.sh           Same, plus a CR on the shebang line makes the kernel look for
+#                  an interpreter named "/bin/sh\r" and report "no such file or
+#                  directory" while naming a file that plainly exists.
+#
+# C sources, Python and JSON tolerate CRLF, so normalizing them is about keeping
+# the tree in one state rather than about anything failing.
+#
+# eol=lf, not just text=auto: text=auto alone would still hand Windows CRLF under
+# autocrlf=true, which is precisely the configuration this is written for.
+# Unix checkouts are unaffected -- they were already LF both in the index and on
+# disk, so this changes nothing there.
+* text=auto eol=lf
+
+# Explicit rather than relying on git's content heuristic. These are the model
+# payloads and the test fixtures; a stray byte rewrite in any of them would not
+# fail the build, it would change the segmentation, which `make test` would then
+# report as a numeric regression with no hint that the file had been mangled in
+# transit. The heuristic is good and would almost certainly catch all of them,
+# but "almost certainly" is the wrong standard for the weights.
+*.fatbin        binary
+*.bin           binary
+*.safetensors   binary
+*.pth           binary
+*.nii           binary
+*.nii.gz        binary
+*.gz            binary
+*.png           binary
+*.pkg           binary
