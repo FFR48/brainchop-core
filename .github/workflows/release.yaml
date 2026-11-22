@@ -230,11 +230,11 @@ jobs:
       - name: Stage PyPI files
         run: |
           mkdir -p dist/upload
-          cp dist/all/*.whl dist/upload/
-          cp dist/all/brainchop-[0-9]*.tar.gz dist/upload/ || true
-          # Keep only the sdist tarball (exclude native -linux-/-macos- archives)
-          rm -f dist/upload/*-linux-*.tar.gz dist/upload/*-macos-*.tar.gz
+          find dist/all -type f -name '*.whl' -exec cp {} dist/upload/ \;
+          find dist/all -type f -name 'brainchop-[0-9]*.tar.gz' ! -name '*-linux-*' ! -name '*-macos-*' -exec cp {} dist/upload/ \;
           ls -lh dist/upload
+          test "$(ls -1 dist/upload/*.whl | wc -l)" -eq 3
+          test "$(ls -1 dist/upload/*.tar.gz | wc -l)" -eq 1
       - name: Publish to PyPI via Trusted Publishing
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -284,15 +284,18 @@ jobs:
           pattern: release-*
           path: dist/release
           merge-multiple: true
-      - name: Print Homebrew tarball SHA-256 checksums
+      - name: Stage flat release assets and print Homebrew SHA-256 checksums
         run: |
+          mkdir -p dist/flat
+          find dist/release -type f -exec cp {} dist/flat/ \;
+          ls -lh dist/flat
           {
             echo "### Homebrew Tarball SHA-256 Checksums"
             echo '```'
-            cat dist/release/brainchop-*-macos-arm64.tar.gz.sha256 dist/release/brainchop-*-linux-*.tar.gz.sha256
+            cat dist/flat/brainchop-*-macos-arm64.tar.gz.sha256 dist/flat/brainchop-*-linux-*.tar.gz.sha256
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          cat dist/release/brainchop-*-macos-arm64.tar.gz.sha256 dist/release/brainchop-*-linux-*.tar.gz.sha256
+          cat dist/flat/brainchop-*-macos-arm64.tar.gz.sha256 dist/flat/brainchop-*-linux-*.tar.gz.sha256
       - name: Create GitHub Release with native archives, wheels, and npm tarball
         env:
           GH_TOKEN: ${{ github.token }}
@@ -301,7 +304,7 @@ jobs:
           if [ "${GITHUB_EVENT_NAME}" != "push" ]; then
             TAG="v$(cat packaging/PYPI_VERSION | tr -d '[:space:]')"
           fi
-          gh release create "$TAG" dist/release/* \
+          gh release create "$TAG" dist/flat/* \
             --title "BrainChop Core ${TAG}" \
             --generate-notes \
             --draft
