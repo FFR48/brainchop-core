@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://brainchop.org">
+    <img src="https://raw.githubusercontent.com/neuroneural/brainchop-core/main/docs/assets/brainchop-icon.png" alt="BrainChop" width="120" />
+  </a>
+</p>
+
 # @brainchop/core
 
 Browser MeshNet brain segmentation on pure-JS WebGPU V4, with WebGL2 and

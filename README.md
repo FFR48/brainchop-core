@@ -1,6 +1,24 @@
-# BrainChop Core
+<p align="center">
+  <a href="https://brainchop.org">
+    <img src="https://raw.githubusercontent.com/neuroneural/brainchop-core/main/docs/assets/brainchop-icon.png" alt="BrainChop" width="140" />
+  </a>
+</p>
 
-Fast, zero-dependency neuroimaging segmentation and skull stripping for native desktops, HPC clusters, Python pipelines, and web browsers — powered by four embedded 3D MeshNet models with **no PyTorch, TensorFlow, tinygrad, CUDA Toolkit, or Python ML stack required at runtime**.
+<h1 align="center">BrainChop Core</h1>
+
+<p align="center">
+  <strong>Fast, zero-dependency 3D brain segmentation and skull stripping for desktops, HPC clusters, Python pipelines, and web browsers.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/neuroneural/brainchop-core/actions/workflows/ci.yml"><img src="https://github.com/neuroneural/brainchop-core/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://pypi.org/project/brainchop/"><img src="https://img.shields.io/pypi/v/brainchop" alt="PyPI" /></a>
+  <a href="https://www.npmjs.com/package/@brainchop/core"><img src="https://img.shields.io/npm/v/@brainchop/core" alt="npm" /></a>
+  <a href="https://brainchop.org"><img src="https://img.shields.io/badge/web%20app-brainchop.org-blue" alt="brainchop.org" /></a>
+  <a href="https://github.com/neuroneural/brainchop-core/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT" /></a>
+</p>
+
+Powered by four embedded 3D MeshNet models with **no PyTorch, TensorFlow, tinygrad, CUDA Toolkit, or Python ML stack required at runtime**.
 
 - **Web App:** [brainchop.org](https://brainchop.org)
 - **Repository:** [github.com/neuroneural/brainchop-core](https://github.com/neuroneural/brainchop-core)
@@ -23,6 +41,9 @@ All four models are compiled directly into self-contained binaries (no separate 
 
 ```bash
 pip install brainchop
+
+# Or run immediately with uv (no virtualenv required)
+uvx brainchop input.nii.gz -o labels.nii.gz
 ```
 
 Prebuilt wheels (`win_amd64`, `macosx_arm64`, `linux_x86_64`) install in ~2 seconds with **zero runtime dependencies** (no PyTorch, no tinygrad, no CUDA Toolkit, no compiler needed). Source installs automatically detect your CPU/GPU (Apple Metal, NVIDIA CUDA Driver API, AMD ROCm HIP) and compile locally. See [docs/pypi.md](docs/pypi.md) for details.
