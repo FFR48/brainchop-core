@@ -12,7 +12,8 @@ authors:
 repository-code: "https://github.com/neuroneural/brainchop-core"
 url: "https://brainchop.org"
 license: MIT
-version: "1.0.0"
+version: "1.1.0"
+date-released: "2026-11-23"
 keywords:
   - neuroimaging
   - MRI

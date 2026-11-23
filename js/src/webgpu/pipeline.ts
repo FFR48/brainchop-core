@@ -44,7 +44,7 @@ import { setupNet, releaseV4Workspace, type V4ExecuteFn } from './meshnet_fast_v
 
 /** Set by esbuild from js/package.json; falls back when run unbundled in tests. */
 declare const __BC_VERSION__: string | undefined
-const BC_VERSION = typeof __BC_VERSION__ === 'string' ? __BC_VERSION__ : '1.0.0'
+const BC_VERSION = typeof __BC_VERSION__ === 'string' ? __BC_VERSION__ : '1.1.0'
 
 /** Reject all-NaN or constant (e.g. all-zero) inputs before conform/inference. */
 function assertNonConstantInput(data: NiftiTypedArray): void {
