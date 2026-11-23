@@ -1,6 +1,6 @@
-// Pure-JS WebGPU V4 segmentation and CAT-lite tissue fraction pipeline.
+// Pure-JS WebGPU V4 segmentation and continuous tissue-fraction (PVE) pipeline.
 // Runs conform, V4 ZYCX WebGPU inference (from src/models/*/model.bin),
-// connected-component cleanup / CAT-lite PVE fitting, and native-space
+// connected-component cleanup / partial-volume tissue fitting, and native-space
 // reslicing entirely in JS + WebGPU with zero WASM binaries.
 
 import { BrainchopError } from '../error.js'
@@ -23,7 +23,9 @@ import {
   NIFTI_DT,
   NIFTI_INTENT_LABEL,
   NIFTI_INTENT_NONE,
+  type NiftiTypedArray,
 } from './nifti.js'
+import { sha256Prefix8 } from './sha256.js'
 import { conformVolumeData, INFERENCE_CONFORM_FHIGH } from './conform-volume.js'
 import { resliceVolumeData, invertAffine4x4, mulAffine4x4 } from './reslice-volume.js'
 import { BWLabeler, largestBinaryComponent26, growMaskBorderMm } from './bwlabels.js'
@@ -39,6 +41,31 @@ import {
   formatV4PlanDiagnostic,
 } from './gpu-compatibility.js'
 import { setupNet, releaseV4Workspace, type V4ExecuteFn } from './meshnet_fast_v4_runner.js'
+
+/** Set by esbuild from js/package.json; falls back when run unbundled in tests. */
+declare const __BC_VERSION__: string | undefined
+const BC_VERSION = typeof __BC_VERSION__ === 'string' ? __BC_VERSION__ : '1.0.0'
+
+/** Reject all-NaN or constant (e.g. all-zero) inputs before conform/inference. */
+function assertNonConstantInput(data: NiftiTypedArray): void {
+  let finite = 0
+  let vmin = Infinity
+  let vmax = -Infinity
+  for (let i = 0; i < data.length; i++) {
+    const v = Number(data[i])
+    if (Number.isFinite(v)) {
+      finite++
+      if (v < vmin) vmin = v
+      if (v > vmax) vmax = v
+    }
+  }
+  if (finite === 0) {
+    throw new Error('brainchopc: input has no finite voxels')
+  }
+  if (vmin === vmax) {
+    throw new Error(`brainchopc: input image is constant (all ${finite} finite voxels equal ${vmin}; zero contrast)`)
+  }
+}
 
 const CONFORM_DIM = 256
 const CONFORM_SHAPE: [number, number, number] = [CONFORM_DIM, CONFORM_DIM, CONFORM_DIM]
@@ -514,6 +541,7 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
   let orig
   try {
     orig = readNifti1(request.input)
+    assertNonConstantInput(orig.data)
   } catch (err) {
     await weightsPromise.catch(() => {})
     throw new BrainchopError(
@@ -574,6 +602,7 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
 
   // 4. Fetch weights & run V4 WebGPU inference
   const weightBytes = await weightsPromise
+  const segDescrip = `brainchop ${BC_VERSION} ${canonical}/${await sha256Prefix8(weightBytes)} webgpu`
   const outputs = await runV4Inference({
     canonical,
     model: request.model,
@@ -662,7 +691,7 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
         calMin: 0,
         calMax: 0,
         intentCode: NIFTI_INTENT_LABEL,
-        descrip: '6.0.5',
+        descrip: segDescrip,
       })
     }
 
@@ -681,7 +710,7 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
       datatypeCode: orig.header.datatypeCode,
       sclSlope: 1,
       sclInter: 0,
-      descrip: '6.0.5',
+      descrip: segDescrip,
     })
 
     const elapsedMs = performance.now() - started
@@ -773,7 +802,7 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
       calMin: 0,
       calMax: 0,
       intentCode: NIFTI_INTENT_LABEL,
-      descrip: '6.0.5',
+      descrip: segDescrip,
     })
   } else {
     if (!isValidAffine4x4(orig.header.stoXyz)) {
@@ -806,7 +835,7 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
       calMin: 0,
       calMax: 0,
       intentCode: NIFTI_INTENT_LABEL,
-      descrip: '6.0.5',
+      descrip: segDescrip,
     })
   }
 
@@ -816,7 +845,7 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
 }
 
 /**
- * Execute continuous GM/WM/CSF/Brain tissue fraction estimation (CAT-lite PVE)
+ * Execute continuous GM/WM/CSF/Brain partial-volume tissue fraction estimation
  * on pure-JS WebGPU V4.
  */
 export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<WebGpuTissuesResult> {
@@ -838,6 +867,7 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
   let orig
   try {
     orig = readNifti1(request.input)
+    assertNonConstantInput(orig.data)
   } catch (err) {
     await weightsPromise.catch(() => {})
     throw new BrainchopError(
@@ -876,7 +906,7 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
   const conformedImg = conformed.img as Uint8Array
   reportProgress('conform', 0.25)
 
-  // 3. Quantile normalization (0.05..0.95) + intensity copy for CAT-lite fit
+  // 3. Quantile normalization (0.05..0.95) + intensity copy for PVE fit
   reportProgress('preprocess', 0.25, { message: 'Computing intensity quantiles' })
   const { qmin, qmax } = computeQuantiles(conformedImg, 0.05, 0.95)
   const normOffset = qmin
@@ -886,6 +916,7 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
 
   // 4. Fetch weights & run V4 WebGPU grouped tissue-prior inference
   const weightBytes = await weightsPromise
+  const pveDescrip = `brainchop ${BC_VERSION} ${canonical}/${await sha256Prefix8(weightBytes)} webgpu pve`
   const outputs = await runV4Inference({
     canonical,
     model: request.model,
@@ -904,7 +935,7 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
   })
 
   if (outputs.length !== 3) {
-    const msg = `brainchopc: CAT-lite expected 3 tissue priors, got ${outputs.length}`
+    const msg = `brainchopc: PVE expected 3 tissue priors, got ${outputs.length}`
     record(msg)
     throw new BrainchopError('inference-failed', msg, log)
   }
@@ -916,8 +947,8 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
   validateNonZeroFloat32(priors[1], 'WM', log, record)
   validateNonZeroFloat32(priors[2], 'CSF', log, record)
 
-  // 5. CAT-lite partial-volume fitting
-  reportProgress('postprocess', 0.85, { message: 'Fitting CAT-lite partial-volume tissues' })
+  // 5. Partial-volume tissue fitting
+  reportProgress('postprocess', 0.85, { message: 'Fitting partial-volume tissues' })
   const { tissues, stats } = applyCatLitePartialVolume(
     priors,
     catLiteIntensity,
@@ -926,11 +957,11 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
   )
   if (stats.applied && stats.tissueMeans && stats.tissueSigmas) {
     record(
-      `[CAT-lite] means CSF=${stats.tissueMeans.csf.toFixed(3)} GM=${stats.tissueMeans.gray.toFixed(3)} WM=${stats.tissueMeans.white.toFixed(3)}; ` +
+      `[PVE] means CSF=${stats.tissueMeans.csf.toFixed(3)} GM=${stats.tissueMeans.gray.toFixed(3)} WM=${stats.tissueMeans.white.toFixed(3)}; ` +
       `sigmas CSF=${stats.tissueSigmas.csf.toFixed(3)} GM=${stats.tissueSigmas.gray.toFixed(3)} WM=${stats.tissueSigmas.white.toFixed(3)}`,
     )
   } else if (!stats.applied) {
-    record(`[CAT-lite] skipped: ${stats.reason ?? 'unknown'}`)
+    record(`[PVE] skipped: ${stats.reason ?? 'unknown'}`)
   }
 
   const [gmMap, wmMap, csfMap] = tissues
@@ -969,7 +1000,7 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
         calMin: 0,
         calMax: 1,
         intentCode: NIFTI_INTENT_NONE,
-        descrip: '6.0.5',
+        descrip: pveDescrip,
       })
     }
     const quantU8 = sameGrid
@@ -993,7 +1024,7 @@ export async function runWebGpuTissues(request: WebGpuSegmentRequest): Promise<W
       calMin: 0,
       calMax: 1,
       intentCode: NIFTI_INTENT_NONE,
-      descrip: '6.0.5',
+      descrip: pveDescrip,
     })
   }
 

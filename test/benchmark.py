@@ -22,7 +22,7 @@ Four numbers per cell:
 
             Median rather than min, because with the warm-up gone the remaining
             spread is ordinary scheduling noise in both directions rather than a
-            one-sided tax on a clean floor. CLAUDE.md's warning still applies --
+            one-sided tax on a clean floor. the project's warning still applies --
             a loaded machine inflates these ~2.5x, so only compare captures
             taken under the same conditions.
 
@@ -352,7 +352,7 @@ def describe_host():
 def voxel_diff(path_a, path_b):
     """Differing voxel count, or None if the two are not comparable."""
     blob_a, blob_b = nii_diff.read(path_a), nii_diff.read(path_b)
-    if blob_a[: nii_diff.HEADER_BYTES] != blob_b[: nii_diff.HEADER_BYTES]:
+    if not nii_diff.header_matches(blob_a, blob_b):
         return None
     a = nii_diff.voxels(blob_a, path_a)
     b = nii_diff.voxels(blob_b, path_b)

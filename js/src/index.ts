@@ -65,7 +65,7 @@ export const MODELS: Record<ModelName, ModelInfo> = {
   'mindmap-fast': {
     name: 'mindmap-fast',
     colormap: COLORMAPS['mindmap-fast'],
-    description: '18-class brain segmentation (16-channel, MindMap-Fast v3.5)',
+    description: 'fast lightweight 18-class cortical and subcortical segmentation',
     outputKind: 'labels',
     capabilities: {
       ct: true, comply: true, saveConform: true, mask: false, border: false,
@@ -74,7 +74,7 @@ export const MODELS: Record<ModelName, ModelInfo> = {
   '16chan18cls': {
     name: '16chan18cls',
     colormap: COLORMAPS['16chan18cls'],
-    description: '18-class brain segmentation (16-channel, alias for mindmap-fast)',
+    description: 'fast lightweight 18-class segmentation (alias for mindmap-fast)',
     outputKind: 'labels',
     capabilities: {
       ct: true, comply: true, saveConform: true, mask: false, border: false,
@@ -83,7 +83,7 @@ export const MODELS: Record<ModelName, ModelInfo> = {
   mindmap: {
     name: 'mindmap',
     colormap: COLORMAPS['mindmap'],
-    description: '18-class brain segmentation (24-channel, MindMap-18 v4.0 Gold)',
+    description: '18-class cortical and subcortical segmentation',
     outputKind: 'labels',
     capabilities: {
       ct: true, comply: true, saveConform: true, mask: false, border: false,
@@ -92,7 +92,7 @@ export const MODELS: Record<ModelName, ModelInfo> = {
   mindsnap: {
     name: 'mindsnap',
     colormap: COLORMAPS['mindsnap'],
-    description: '104-class Desikan-Killiany parcellation (24-channel, MindSnap-104 v4.0 Gold)',
+    description: '104-class Desikan-Killiany parcellation',
     outputKind: 'labels',
     capabilities: {
       ct: true, comply: true, saveConform: true, mask: false, border: false,
@@ -443,6 +443,7 @@ async function segmentInternal(
 
   // --- WebGL2 / CPU WASM fallback paths ------------------------------------
   options.onProgress?.({ stage: 'load', progress: 0, message: `Loading ${backend} module` })
+  let reportedFallbackInference = false
   let result
   try {
     result = await run({
@@ -455,7 +456,17 @@ async function segmentInternal(
       extraOutputs: tissueMode ? ['/out_wm.nii', '/out_csf.nii', '/out_brain.nii'] : maskPath ? [maskPath] : [],
       assetPath: options.assetPath,
       timeoutMs: options.timeoutMs,
-      onLog: options.onLog,
+      onLog: (line) => {
+        options.onLog?.(line)
+        if (!reportedFallbackInference && /using\s+(cpu|webgl2)\s+backend/i.test(line)) {
+          reportedFallbackInference = true
+          options.onProgress?.({
+            stage: 'inference',
+            progress: 0.15,
+            message: `Running ${options.model} (${backend})`,
+          })
+        }
+      },
     })
   } finally {
     if (ownsContext && glContext) releaseGlContext(glContext)

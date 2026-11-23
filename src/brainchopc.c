@@ -21,9 +21,11 @@
 #include "cat_lite.h"
 #include "cli.h"
 #include "model_specs.h"
+#include "model_weights_sha.h"
 #include "payload.h"
 #include "preprocess.h"
 #include "version.h"
+#include <ctype.h>
 #include <limits.h>
 #include <math.h>
 #include <stdint.h>
@@ -38,7 +40,7 @@
  *
  * The GPU backends each carry a stage profiler (BRAINCHOPC_CUDA_PROFILE and
  * friends) and the host side carried none, which was fine while the host side
- * was noise: CLAUDE.md's percentages were measured against a 140 s CPU run,
+ * was noise: the project's percentages were measured against a 140 s CPU run,
  * where conform was ~0.1% and gzip "within noise".
  *
  * That stopped being true. A tuned CUDA run is ~1.08 s of which only ~0.35 s is
@@ -171,8 +173,14 @@ static int64_t round_i64(double x) {
 static int sanitize_input(nifti_image *nim, int source_datatype) {
 	float *value = nim->data;
 	size_t finite = 0, replaced = 0;
+	float vmin = INFINITY, vmax = -INFINITY;
 	for (size_t i = 0; i < (size_t)nim->nvox; i++) {
-		if (isfinite(value[i])) { finite++; continue; }
+		if (isfinite(value[i])) {
+			finite++;
+			if (value[i] < vmin) vmin = value[i];
+			if (value[i] > vmax) vmax = value[i];
+			continue;
+		}
 		value[i] = 0.0f;
 		replaced++;
 	}
@@ -187,6 +195,11 @@ static int sanitize_input(nifti_image *nim, int source_datatype) {
 	if (replaced)
 		fprintf(stderr, "brainchopc: WARNING - replaced %zu non-finite voxels with 0\n",
 			replaced);
+	if (vmin == vmax) {
+		fprintf(stderr, "brainchopc: input image is constant (all %zu finite voxels equal %g; zero contrast)\n",
+			finite, (double)vmin);
+		return 1;
+	}
 	return 0;
 }
 
@@ -296,8 +309,35 @@ static nifti_image *copy_header(const nifti_image *source) {
 	return copy;
 }
 
+static void format_provenance_descrip(char descrip[80],
+		const char *backend_name, int no_turbo, int is_pve) {
+	const char *model_name =
+		!strcmp(BC_MODEL_NAME, "model16chan18cls") ? "mindmap-fast" : BC_MODEL_NAME;
+	const char *bname = backend_name ? backend_name : "unknown";
+	const char *wsha = BC_MODEL_WEIGHTS_SHA8;
+	memset(descrip, 0, 80);
+	if (is_pve) {
+		snprintf(descrip, 80, "brainchop %s %s/%s %s pve",
+			BC_VERSION, model_name, wsha, bname);
+	} else if (!strcmp(bname, "metal") || !strcmp(bname, "webgpu")) {
+		snprintf(descrip, 80, "brainchop %s %s/%s %s %s",
+			BC_VERSION, model_name, wsha, bname, no_turbo ? "exact" : "turbo");
+	} else if (!strcmp(bname, "cpu")) {
+#ifdef __EMSCRIPTEN__
+		snprintf(descrip, 80, "brainchop %s %s/%s %s exact",
+			BC_VERSION, model_name, wsha, bname);
+#else
+		snprintf(descrip, 80, "brainchop %s %s/%s %s %s",
+			BC_VERSION, model_name, wsha, bname, no_turbo ? "exact" : "turbo");
+#endif
+	} else {
+		snprintf(descrip, 80, "brainchop %s %s/%s %s",
+			BC_VERSION, model_name, wsha, bname);
+	}
+}
+
 static int write_float_image(const nifti_image *reference, const float *values,
-		const char *path) {
+		const char *path, const char *backend_name, int no_turbo) {
 	nifti_image *image=copy_header(reference);
 	if(!image)return 1;
 	image->data=(void *)values;
@@ -308,8 +348,7 @@ static int write_float_image(const nifti_image *reference, const float *values,
 	image->intent_code=NIFTI_INTENT_NONE;
 	image->intent_p1=image->intent_p2=image->intent_p3=0.0;
 	memset(image->intent_name,0,sizeof(image->intent_name));
-	memset(image->descrip,0,sizeof(image->descrip));
-	memcpy(image->descrip,"6.0.5",5);
+	format_provenance_descrip(image->descrip,backend_name,no_turbo,0);
 	int failed=nifti_set_filenames(image,path,0,1)||nifti_image_write_status(image);
 	image->data=NULL;
 	nifti_image_free(image);
@@ -320,6 +359,8 @@ static int write_float_image(const nifti_image *reference, const float *values,
 typedef struct {
 	const nifti_image *reference;
 	const char *output;
+	const char *backend_name;
+	int no_turbo;
 } class_output_context;
 
 static int write_class(int class_index, const float *values, size_t count,
@@ -338,13 +379,14 @@ static int write_class(int class_index, const float *values, size_t count,
 	else if(length>=4&&!strcmp(base+length-4,".nii")){base[length-4]=0;suffix=".nii";}
 	if(snprintf(path,sizeof(path),"%s_c%d%s",base,class_index,suffix)>=(int)sizeof(path))
 		return 1;
-	if(write_float_image(context->reference,values,path))return 1;
+	if(write_float_image(context->reference,values,path,
+			context->backend_name,context->no_turbo))return 1;
 	fprintf(stderr,"brainchop :: Saved %s\n",path);
 	return 0;
 }
 
 static int write_mask(const nifti_image *reference, const float *values,
-		const char *path) {
+		const char *path, const char *backend_name, int no_turbo) {
 	nifti_image *mask=copy_header(reference);
 	if(!mask)return 1;
 	unsigned char *data=nii_malloc((size_t)reference->nvox,1);
@@ -360,8 +402,7 @@ static int write_mask(const nifti_image *reference, const float *values,
 	mask->intent_code=NIFTI_INTENT_LABEL;
 	mask->intent_p1=mask->intent_p2=mask->intent_p3=0.0;
 	memset(mask->intent_name,0,sizeof(mask->intent_name));
-	memset(mask->descrip,0,sizeof(mask->descrip));
-	memcpy(mask->descrip,"6.0.5",5);
+	format_provenance_descrip(mask->descrip,backend_name,no_turbo,0);
 	int failed=nifti_set_filenames(mask,path,0,1)||nifti_image_write_status(mask);
 	nifti_image_free(mask);
 	if(failed)fprintf(stderr,"brainchopc: unable to write %s\n",path);
@@ -382,7 +423,7 @@ static int write_mask(const nifti_image *reference, const float *values,
  */
 static int write_fraction(const nifti_image *conformed, const nifti_image *original,
 		const float *values, const char *output, const char *tissue,
-		int save_conform) {
+		int save_conform, const char *backend_name, int no_turbo) {
 	char base[4096],path[4096];
 	size_t length=strlen(output);
 	if(length>=sizeof(base))return 1;
@@ -435,8 +476,7 @@ static int write_fraction(const nifti_image *conformed, const nifti_image *origi
 	image->intent_code=NIFTI_INTENT_NONE;
 	image->intent_p1=image->intent_p2=image->intent_p3=0.0;
 	memset(image->intent_name,0,sizeof(image->intent_name));
-	memset(image->descrip,0,sizeof(image->descrip));
-	memcpy(image->descrip,"6.0.5",5);
+	format_provenance_descrip(image->descrip,backend_name,no_turbo,1);
 	int failed=nifti_set_filenames(image,path,0,1)||nifti_image_write_status(image);
 	nifti_image_free(image);
 	if(failed)fprintf(stderr,"brainchopc: unable to write %s\n",path);
@@ -512,7 +552,7 @@ static int run_model(nifti_image *original, int input_datatype,
 		inference.y_low=box.y_low; inference.y_high=box.y_high;
 		inference.z_low=box.z_low; inference.z_high=box.z_high;
 	}
-	class_output_context class_context={conformed,cli->output};
+	class_output_context class_context={conformed,cli->output,backend->name,cli->no_turbo};
 	if(cli->export_classes) {
 		inference.class_writer=write_class;
 		inference.class_writer_context=&class_context;
@@ -535,11 +575,14 @@ static int run_model(nifti_image *original, int input_datatype,
 	}
 #endif
 	bc_stage("to uint8 + setup");
-	if(!failed) failed=segment_checked(backend,conformed,result,weights,&inference);
+	const bc_backend *effective_backend=backend;
+	if(!failed) failed=segment_checked(effective_backend,conformed,result,weights,&inference);
 	bc_stage("segment (incl GPU)");
-	if(failed && allow_fallback && backend!=&bc_cpu_backend) {
-		fprintf(stderr,"brainchopc: %s backend failed; falling back to CPU\n",backend->name);
-		failed=segment_checked(&bc_cpu_backend,conformed,result,weights,&inference);
+	if(failed && allow_fallback && effective_backend!=&bc_cpu_backend) {
+		fprintf(stderr,"brainchopc: %s backend failed; falling back to CPU\n",effective_backend->name);
+		effective_backend=&bc_cpu_backend;
+		class_context.backend_name=effective_backend->name;
+		failed=segment_checked(effective_backend,conformed,result,weights,&inference);
 	}
 	if (failed) {
 #if BC_HAS_PVE
@@ -588,14 +631,13 @@ static int run_model(nifti_image *original, int input_datatype,
 		for(int i=0;i<3&&!pve_failed;i++)
 			pve_failed=write_fraction(conformed,original,
 				planes+(size_t)i*conformed->nvox,cli->output,tissue[i],
-				cli->save_conform);
-		/* brain = GM + WM, summed in place after GM is written: its 0.5
-		   isosurface is a sub-voxel pial surface, the one a host meshes. */
+				cli->save_conform,effective_backend->name,cli->no_turbo);
+		/* brain = GM + WM combined continuous tissue fraction map, summed in place. */
 		for(size_t v=0;v<(size_t)conformed->nvox&&!pve_failed;v++)
 			planes[v]+=planes[(size_t)conformed->nvox+v];
 		if(!pve_failed)
 			pve_failed=write_fraction(conformed,original,planes,cli->output,
-				"brain",cli->save_conform);
+				"brain",cli->save_conform,effective_backend->name,cli->no_turbo);
 		bc_stage("pve write");
 		free(planes);free(result);nifti_image_free(conformed);
 		return pve_failed;
@@ -647,7 +689,8 @@ static int run_model(nifti_image *original, int input_datatype,
 			nifti_image_free(conformed);return 1;
 		}
 		float *img=original->data,*resliced=conformed->data;
-		if(cli->mask_output&&write_mask(original,resliced,cli->mask_output)) {
+		if(cli->mask_output&&write_mask(original,resliced,cli->mask_output,
+				effective_backend->name,cli->no_turbo)) {
 			nifti_image_free(conformed);return 1;
 		}
 		float mn=INFINITY;
@@ -657,6 +700,7 @@ static int run_model(nifti_image *original, int input_datatype,
 		nifti_image_free(conformed);
 		if(brainchopc_convert(original,input_datatype))return 1;
 		bc_stage("reslice + mask");
+		format_provenance_descrip(original->descrip,effective_backend->name,cli->no_turbo,0);
 		*output=original;
 		return 0;
 	}
@@ -680,8 +724,20 @@ static int run_model(nifti_image *original, int input_datatype,
 		nifti_image_free(conformed);return 1;
 	}
 	bc_stage("reslice + convert");
+	format_provenance_descrip(conformed->descrip,effective_backend->name,cli->no_turbo,0);
 	*output=conformed;
 	return 0;
+}
+
+static int has_suffix_ci(const char *path, const char *suffix) {
+	size_t plen = strlen(path), slen = strlen(suffix);
+	if (plen < slen) return 0;
+	const char *tail = path + (plen - slen);
+	for (size_t i = 0; i < slen; i++) {
+		if (tolower((unsigned char)tail[i]) != tolower((unsigned char)suffix[i]))
+			return 0;
+	}
+	return 1;
 }
 
 int main(int argc, char **argv) {
@@ -699,6 +755,20 @@ int main(int argc, char **argv) {
 	if(cli.cpu_threads>0)
 		fprintf(stderr,"brainchopc: warning: -cpu has no effect in this serial build\n");
 #endif
+	if (has_suffix_ci(cli.input, ".mgz") || has_suffix_ci(cli.input, ".mgh")) {
+		fprintf(stderr, "brainchopc: unsupported format '%s' (FreeSurfer MGZ/MGH); "
+			"CLI reads NIfTI-1 (.nii, .nii.gz, .nii.zst). Convert with: "
+			"mri_convert input.mgz input.nii.gz\n", cli.input);
+		return 1;
+	}
+	if (has_suffix_ci(cli.input, ".dcm") || has_suffix_ci(cli.input, ".nrrd") ||
+			has_suffix_ci(cli.input, ".nhdr") || has_suffix_ci(cli.input, ".mha") ||
+			has_suffix_ci(cli.input, ".mhd")) {
+		fprintf(stderr, "brainchopc: unsupported format '%s'; "
+			"CLI reads NIfTI-1 (.nii, .nii.gz, .nii.zst) -- convert to NIfTI first\n",
+			cli.input);
+		return 1;
+	}
 	float *weights=load_model_weights();
 	if(!weights)return 1;
 	bc_stage(NULL);
@@ -707,7 +777,16 @@ int main(int argc, char **argv) {
 	if (!nim) { fprintf(stderr,"brainchopc: unable to read %s\n",cli.input); free(weights);return 1; }
 	if (nim->nx<1 || nim->ny<1 || nim->nz<1 ||
 	    nim->nvox != nim->nx*nim->ny*nim->nz) {
-		fprintf(stderr,"brainchopc: input must be a scalar 3D image\n");
+		if (nim->ndim >= 4 && nim->nt > 1) {
+			fprintf(stderr, "brainchopc: input is 4D (%lldx%lldx%lldx%lld); "
+				"BrainChop expects a single 3D scalar volume (extract one 3D frame first)\n",
+				(long long)nim->nx, (long long)nim->ny, (long long)nim->nz, (long long)nim->nt);
+		} else {
+			fprintf(stderr, "brainchopc: input must be a scalar 3D image "
+				"(got %lldD, dims %lldx%lldx%lld, nvox=%lld)\n",
+				(long long)nim->ndim, (long long)nim->nx, (long long)nim->ny,
+				(long long)nim->nz, (long long)nim->nvox);
+		}
 		free(weights);nifti_image_free(nim); return 1;
 	}
 	int input_datatype=nim->datatype;
@@ -823,8 +902,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr,"brainchop :: Done!\n");
 		return 0;
 	}
-	memset(output->descrip,0,sizeof(output->descrip));
-	memcpy(output->descrip,"6.0.5",5); /* niimath's NIfTI output provenance */
 	if (nifti_set_filenames(output,cli.output,0,1) ||
 	    nifti_image_write_status(output)) {
 		fprintf(stderr,"brainchopc: unable to write %s\n",cli.output);

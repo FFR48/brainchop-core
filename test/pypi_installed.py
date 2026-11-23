@@ -17,6 +17,8 @@ import sys
 import sysconfig
 import tempfile
 
+import nii_diff
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -32,12 +34,13 @@ def main():
     baseline_x86=build_record['cpu_target']=='baseline' and platform.machine().lower() in ('x86_64','amd64')
     def parity(actual, reference, model):
         a,b=gzip.decompress(Path(actual).read_bytes()),gzip.decompress(Path(reference).read_bytes())
+        assert nii_diff.descrip(a).startswith('brainchop '), ('missing provenance descrip', model, nii_diff.descrip(a))
         if baseline_x86 and model=='mindsnap':
-            assert a[:352]==b[:352] and len(a)==len(b)
+            assert nii_diff.header_matches(a,b) and len(a)==len(b)
             differing=sum(x!=y for x,y in zip(a[352:],b[352:]))
             assert differing<=1, ('baseline MindSnap changed beyond its measured one-voxel rounding difference',differing)
             print(f'PASS: baseline MindSnap differs at {differing} voxels (limit 1); AVX2/FMA reference unchanged',flush=True)
-        else: assert a==b,model
+        else: assert nii_diff.equal_ignoring_descrip(a,b),model
     metadata = importlib.metadata.metadata('brainchop')
     assert metadata['Version'] == (fixtures.parent / 'packaging/PYPI_VERSION').read_text().strip()
     assert not metadata.get_all('Requires-Dist'), 'the native package must need no Python dependencies'
@@ -98,14 +101,14 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix='brainchop-pip-inference-') as temporary:
         work = Path(temporary)
-        # This is the old Python CLI's conformed-space default, which differs
-        # from the standalone C binaries' input-space default.
-        for model, reference in (('mindmap-fast', 'labels16.nii.gz'),
-                                 ('mindmap', 'labels24.nii.gz'),
+        # All CLI models default to input space; pass --save-conform here to
+        # verify parity against the conformed 256^3 reference fixtures.
+        for model, reference in (('mindmap', 'labels24.nii.gz'),
+                                 ('mindmap-fast', 'labels16.nii.gz'),
                                  ('mindsnap', 'labels104.nii.gz')):
             output = work / f'{model} output.nii.gz'
-            model_args = [] if model == 'mindmap-fast' else ['-m', model]
-            run(fixtures / 't1_crop.nii.gz', *model_args, '--threads', '4', '--no-turbo', '-o', output)
+            model_args = [] if model == 'mindmap' else ['-m', model]
+            run(fixtures / 't1_crop.nii.gz', *model_args, '--save-conform', '--threads', '4', '--no-turbo', '-o', output)
             expected = fixtures / reference
             if model == 'mindmap':
                 # The historical labels24 fixture uses --legacy-cleanup. The
@@ -128,14 +131,18 @@ def main():
         inverse_reference = ('labels16_native_majority_wasm.nii.gz'
                              if platform.machine().lower() in ('x86_64', 'amd64')
                              else 'labels16_native_majority.nii.gz')
-        assert content(inverse) == content(fixtures / inverse_reference)
-        print('PASS: default checkpoint and --inverse-conform, input-space output is bit-exact', flush=True)
+        inverse_bytes = content(inverse)
+        assert nii_diff.descrip(inverse_bytes).startswith('brainchop '), nii_diff.descrip(inverse_bytes)
+        assert nii_diff.equal_ignoring_descrip(inverse_bytes, content(fixtures / inverse_reference))
+        print('PASS: mindmap-fast and --inverse-conform, input-space output is bit-exact', flush=True)
 
         stripped = work / 'stripped.nii.gz'
         mask = work / 'mask.nii.gz'
         run(fixtures / 't1_crop.nii.gz', '--skull-strip', '--threads', '4', '--mask', mask,
             '--export-classes', '-o', stripped)
-        assert content(stripped) == content(fixtures / 'bet.nii.gz')
+        stripped_bytes = content(stripped)
+        assert nii_diff.descrip(stripped_bytes).startswith('brainchop '), nii_diff.descrip(stripped_bytes)
+        assert nii_diff.equal_ignoring_descrip(stripped_bytes, content(fixtures / 'bet.nii.gz'))
         mask_bytes = content(mask)
         assert struct.unpack_from('<8h', mask_bytes, 40)[1:4] == (256, 256, 256)
         assert struct.unpack_from('<h', mask_bytes, 70)[0] == 2  # uint8
