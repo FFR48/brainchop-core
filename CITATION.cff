@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 title: "BrainChop Core"
-message: "If you use BrainChop Core in your research, please cite both this software and the BrainChop JOSS paper."
+message: "If you use BrainChop Core in published research, please cite the BrainChop Aperture Neuro paper, MindGrab (when using skull stripping), and the original JOSS paper."
 type: software
 authors:
   - family-names: Plis
@@ -24,16 +24,64 @@ keywords:
 preferred-citation:
   type: article
   authors:
+    - family-names: Plis
+      given-names: "Sergey M."
     - family-names: Masoud
       given-names: Mohamed
     - family-names: Hu
       given-names: Farfalla
-    - family-names: Plis
-      given-names: Sergey
-  title: "Brainchop: In-browser MRI volumetric segmentation and rendering"
-  journal: "Journal of Open Source Software"
-  volume: 8
-  issue: 83
-  start: 5098
-  year: 2023
-  doi: "10.21105/joss.05098"
+    - family-names: Hanayik
+      given-names: Taylor
+    - family-names: Ghosh
+      given-names: "Satrajit S."
+    - family-names: Drake
+      given-names: Chris
+    - family-names: Newman-Norlund
+      given-names: Roger
+    - family-names: Rorden
+      given-names: Christopher
+  title: "Brainchop: Providing an edge ecosystem for deployment of neuroimaging artificial intelligence models"
+  journal: "Aperture Neuro"
+  volume: 4
+  year: 2024
+  doi: "10.52294/001c.123059"
+  url: "https://apertureneuro.org/article/123059-brainchop-providing-an-edge-ecosystem-for-deployment-of-neuroimaging-artificial-intelligence-models"
+references:
+  - type: article
+    authors:
+      - family-names: Fani
+        given-names: Armina
+      - family-names: Doan
+        given-names: Mike
+      - family-names: Le
+        given-names: Isabelle
+      - family-names: Fedorov
+        given-names: Alex
+      - family-names: Hoffmann
+        given-names: Malte
+      - family-names: Rorden
+        given-names: Chris
+      - family-names: Plis
+        given-names: Sergey
+    title: "MindGrab: A spectrally-motivated architecture for accessible deep learning in neuroimaging"
+    journal: "NeuroImage"
+    volume: 338
+    start: 122074
+    year: 2026
+    doi: "10.1016/j.neuroimage.2026.122074"
+    url: "https://www.sciencedirect.com/science/article/pii/S1053811926003897"
+  - type: article
+    authors:
+      - family-names: Masoud
+        given-names: Mohamed
+      - family-names: Hu
+        given-names: Farfalla
+      - family-names: Plis
+        given-names: Sergey
+    title: "Brainchop: In-browser MRI volumetric segmentation and rendering"
+    journal: "Journal of Open Source Software"
+    volume: 8
+    issue: 83
+    start: 5098
+    year: 2023
+    doi: "10.21105/joss.05098"

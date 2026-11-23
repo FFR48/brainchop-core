@@ -150,9 +150,42 @@ Install `@brainchop/core` via npm (`npm install @brainchop/core`) — see [js/RE
 
 ## Citation
 
-If you use BrainChop in academic work, please cite the BrainChop project (see [CITATION.cff](CITATION.cff)):
+If you use BrainChop Core in published research, please cite the relevant papers below (see also [CITATION.cff](CITATION.cff)):
+
+1. **MindGrab (`mindgrab` skull stripping):**
+   Armina Fani, Mike Doan, Isabelle Le, Alex Fedorov, Malte Hoffmann, Chris Rorden, and Sergey Plis. *MindGrab: A spectrally-motivated architecture for accessible deep learning in neuroimaging.* **NeuroImage**, 338:122074, 2026.
+   [DOI: 10.1016/j.neuroimage.2026.122074](https://doi.org/10.1016/j.neuroimage.2026.122074) · [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1053811926003897) · [PubMed (PMID: 42331200)](https://pubmed.ncbi.nlm.nih.gov/42331200/)
+
+2. **BrainChop Edge Ecosystem (primary BrainChop reference):**
+   Sergey M. Plis, Mohamed Masoud, Farfalla Hu, Taylor Hanayik, Satrajit S. Ghosh, Chris Drake, Roger Newman-Norlund, and Christopher Rorden. *Brainchop: Providing an edge ecosystem for deployment of neuroimaging artificial intelligence models.* **Aperture Neuro**, 4, 2024.
+   [DOI: 10.52294/001c.123059](https://doi.org/10.52294/001c.123059) · [Aperture Neuro](https://apertureneuro.org/article/123059-brainchop-providing-an-edge-ecosystem-for-deployment-of-neuroimaging-artificial-intelligence-models)
+
+3. **Original BrainChop Software Paper:**
+   Mohamed Masoud, Farfalla Hu, and Sergey Plis. *Brainchop: In-browser MRI volumetric segmentation and rendering.* **Journal of Open Source Software**, 8(83):5098, 2023.
+   [DOI: 10.21105/joss.05098](https://doi.org/10.21105/joss.05098)
+
+*(Citations for the v4.0 segmentation models — MindMap and MindSnap — will be added here upon publication.)*
 
 ```bibtex
+@article{fani2026mindgrab,
+  title   = {MindGrab: A spectrally-motivated architecture for accessible deep learning in neuroimaging},
+  author  = {Fani, Armina and Doan, Mike and Le, Isabelle and Fedorov, Alex and Hoffmann, Malte and Rorden, Chris and Plis, Sergey},
+  journal = {NeuroImage},
+  volume  = {338},
+  pages   = {122074},
+  year    = {2026},
+  doi     = {10.1016/j.neuroimage.2026.122074}
+}
+
+@article{plis2024brainchop,
+  title   = {Brainchop: Providing an edge ecosystem for deployment of neuroimaging artificial intelligence models},
+  author  = {Plis, Sergey M. and Masoud, Mohamed and Hu, Farfalla and Hanayik, Taylor and Ghosh, Satrajit S. and Drake, Chris and Newman-Norlund, Roger and Rorden, Christopher},
+  journal = {Aperture Neuro},
+  volume  = {4},
+  year    = {2024},
+  doi     = {10.52294/001c.123059}
+}
+
 @article{masoud2023brainchop,
   title   = {Brainchop: In-browser MRI volumetric segmentation and rendering},
   author  = {Masoud, Mohamed and Hu, Farfalla and Plis, Sergey},

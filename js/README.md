@@ -207,3 +207,13 @@ npm run makeWasm && npm run build    # full build including WebGL2 + CPU WASM fa
 npm run test:unit                    # Node unit tests (parseModelBin parity, NIfTI, gpu-compat, conform/bwlabels/reslice)
 npm test                             # real-browser end-to-end tests (needs playwright via BC_PLAYWRIGHT_ROOT)
 ```
+
+## Citation
+
+If you use `@brainchop/core` in published research, please cite the relevant papers:
+
+1. **MindGrab (`mindgrab` skull stripping):** Fani, A., Doan, M., Le, I., Fedorov, A., Hoffmann, M., Rorden, C., & Plis, S. (2026). *MindGrab: A spectrally-motivated architecture for accessible deep learning in neuroimaging.* **NeuroImage**, 338, 122074. [DOI: 10.1016/j.neuroimage.2026.122074](https://doi.org/10.1016/j.neuroimage.2026.122074) · [PubMed](https://pubmed.ncbi.nlm.nih.gov/42331200/)
+2. **BrainChop Edge Ecosystem:** Plis, S. M., Masoud, M., Hu, F., Hanayik, T., Ghosh, S. S., Drake, C., Newman-Norlund, R., & Rorden, C. (2024). *Brainchop: Providing an edge ecosystem for deployment of neuroimaging artificial intelligence models.* **Aperture Neuro**, 4. [DOI: 10.52294/001c.123059](https://doi.org/10.52294/001c.123059)
+3. **Original BrainChop Software Paper:** Masoud, M., Hu, F., & Plis, S. (2023). *Brainchop: In-browser MRI volumetric segmentation and rendering.* **Journal of Open Source Software**, 8(83), 5098. [DOI: 10.21105/joss.05098](https://doi.org/10.21105/joss.05098)
+
+*(Full BibTeX entries are in the [BrainChop Core README](https://github.com/neuroneural/brainchop-core#citation); citations for the v4.0 MindMap and MindSnap models will be added upon publication.)*
