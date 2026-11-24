@@ -235,13 +235,56 @@ int brainchopc_convert(nifti_image *nim, int datatype) {
 	return 0;
 }
 
-static nifti_image *private_float_copy(const nifti_image *src) {
+static int scaled_integer_input(const nifti_image *image) {
+	switch(image->datatype) {
+	case DT_UINT8: case DT_INT8:
+	case DT_UINT16: case DT_INT16:
+	case DT_UINT32: case DT_INT32:
+	case DT_UINT64: case DT_INT64:
+		return isfinite(image->scl_slope) && image->scl_slope != 0.0 &&
+			isfinite(image->scl_inter) &&
+			(image->scl_slope != 1.0 || image->scl_inter != 0.0);
+	default:
+		return 0;
+	}
+}
+
+static int stored_voxel_less(const nifti_image *image, size_t a, size_t b) {
+	/* Adjacent 64-bit integers can round to the same double in voxel(). */
+	if(image->datatype==DT_INT64) {
+		const int64_t *data=image->data;
+		return data[a]<data[b];
+	}
+	if(image->datatype==DT_UINT64) {
+		const uint64_t *data=image->data;
+		return data[a]<data[b];
+	}
+	return voxel(image,a)<voxel(image,b);
+}
+
+static void mask_scaled_input(nifti_image *image, const float *mask) {
+	/* Preserve the input encoding. The lowest decoded intensity is at the
+	 * largest stored value when the slope is negative. */
+	size_t background=0;
+	int descending=image->scl_slope<0.0;
+	for(size_t i=1;i<(size_t)image->nvox;i++) {
+		if(descending ? stored_voxel_less(image,background,i) : stored_voxel_less(image,i,background))
+			background=i;
+	}
+	size_t width=(size_t)image->nbyper;
+	unsigned char *data=image->data;
+	for(size_t i=0;i<(size_t)image->nvox;i++)
+		if(i!=background && mask[i]<=0.0f)
+			memcpy(data+i*width,data+background*width,width);
+}
+
+static nifti_image *private_image_copy(const nifti_image *src) {
 	nifti_image *dst=calloc(1,sizeof(*dst));
 	if (!dst) return NULL;
 	*dst=*src;
 	dst->fname=NULL; dst->iname=NULL; dst->ext_list=NULL; dst->num_ext=0;
 	size_t bytes;
-	if (nii_mul_size((size_t)src->nvox,sizeof(float),&bytes)) { free(dst); return NULL; }
+	if (nii_mul_size((size_t)src->nvox,(size_t)src->nbyper,&bytes)) { free(dst); return NULL; }
 	dst->data=malloc(bytes);
 	if (!dst->data) { free(dst); return NULL; }
 	memcpy(dst->data,src->data,bytes);
@@ -512,9 +555,14 @@ static int run_model(nifti_image *original, int input_datatype,
 		int mindgrab_output, const float *weights, const bc_backend *backend,
 		int allow_fallback, const bc_cli_options *cli, nifti_image **output) {
 	*output=NULL;
+	int preserve_encoding=mindgrab_output && scaled_integer_input(original);
 	bc_stage(NULL);
-	nifti_image *conformed=private_float_copy(original);
+	nifti_image *conformed=private_image_copy(original);
 	if (!conformed) return 1;
+	if(preserve_encoding &&
+		(brainchopc_convert(conformed,DT_FLOAT32) || sanitize_input(conformed,input_datatype))) {
+		nifti_image_free(conformed);return 1;
+	}
 	bc_stage("copy");
 	if(cli->ct&&brainchopc_hounsfield_to_cormack(conformed)) {
 		fprintf(stderr,"brainchopc: CT conversion failed\n");
@@ -688,17 +736,22 @@ static int run_model(nifti_image *original, int input_datatype,
 				"sform is not a usable spatial transform\n");
 			nifti_image_free(conformed);return 1;
 		}
-		float *img=original->data,*resliced=conformed->data;
+		float *resliced=conformed->data;
 		if(cli->mask_output&&write_mask(original,resliced,cli->mask_output,
 				effective_backend->name,cli->no_turbo)) {
 			nifti_image_free(conformed);return 1;
 		}
-		float mn=INFINITY;
-		for(size_t i=0;i<(size_t)original->nvox;i++)mn=fminf(mn,img[i]);
-		for(size_t i=0;i<(size_t)original->nvox;i++)
-			if(resliced[i]<=0.0f)img[i]=mn;
+		if(preserve_encoding) {
+			mask_scaled_input(original,resliced);
+		} else {
+			float *img=original->data;
+			float mn=INFINITY;
+			for(size_t i=0;i<(size_t)original->nvox;i++)mn=fminf(mn,img[i]);
+			for(size_t i=0;i<(size_t)original->nvox;i++)
+				if(resliced[i]<=0.0f)img[i]=mn;
+		}
 		nifti_image_free(conformed);
-		if(brainchopc_convert(original,input_datatype))return 1;
+		if(!preserve_encoding && brainchopc_convert(original,input_datatype))return 1;
 		bc_stage("reslice + mask");
 		format_provenance_descrip(original->descrip,effective_backend->name,cli->no_turbo,0);
 		*output=original;
@@ -883,7 +936,9 @@ int main(int argc, char **argv) {
 		free(weights);nifti_image_free(nim);return 1;
 	}
 	nifti_image *output=NULL;
-	if (brainchopc_convert(nim,DT_FLOAT32) || sanitize_input(nim,input_datatype) ||
+	int preserve_encoding=mindgrab_output && scaled_integer_input(nim);
+	if ((!preserve_encoding &&
+		 (brainchopc_convert(nim,DT_FLOAT32) || sanitize_input(nim,input_datatype))) ||
 	    run_model(nim,input_datatype,mindgrab_output,weights,backend,automatic_backend,
 			&cli,&output)) {
 		free(weights);nifti_image_free(nim); return 1;
