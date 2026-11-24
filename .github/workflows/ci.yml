@@ -6,8 +6,17 @@ name: build and test
 on:
   push:
     branches: [main]
-    paths-ignore: ['**.md']
+    paths-ignore:
+      - '**.md'
+      - 'CITATION.cff'
+      - 'LICENSE'
+      - 'docs/**'
   pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'CITATION.cff'
+      - 'LICENSE'
+      - 'docs/**'
   workflow_dispatch:
     inputs:
       cuda_only:
