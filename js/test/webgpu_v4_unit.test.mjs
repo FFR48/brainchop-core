@@ -26,6 +26,8 @@ import {
   writeNifti1,
   decodeNiftiVoxelsToFloat32,
   encodeFloat32ToDatatype,
+  isIntegerNiftiDatatype,
+  maskMindGrabVolume,
   quaternToMat44,
   mat44ToQuatern,
   NIFTI_DT,
@@ -566,5 +568,111 @@ test('sha256Prefix8 matches node:crypto across edge lengths and all 4 model.bin 
     const raw = new Uint8Array(readFileSync(join(repoRoot, 'src', 'models', dir, 'model.bin')))
     const expected = createHash('sha256').update(raw).digest('hex').slice(0, 8)
     assert.equal(await sha256Prefix8(raw), expected, `model.bin SHA-256 prefix mismatch for ${dir}`)
+  }
+})
+
+// ---------------------------------------------------------------------------
+// 5. MindGrab native integer masking, scaling preservation & NIfTI-1 slope=0
+// ---------------------------------------------------------------------------
+test('MindGrab masking preserves integer encoding, scaling (incl. negative/fractional/64-bit), and slope=0 rules', () => {
+  for (const dt of [
+    NIFTI_DT.UINT8, NIFTI_DT.INT8, NIFTI_DT.UINT16, NIFTI_DT.INT16,
+    NIFTI_DT.UINT32, NIFTI_DT.INT32, NIFTI_DT.INT64, NIFTI_DT.UINT64,
+  ]) {
+    assert.equal(isIntegerNiftiDatatype(dt), true)
+  }
+  assert.equal(isIntegerNiftiDatatype(NIFTI_DT.FLOAT32), false)
+  assert.equal(isIntegerNiftiDatatype(NIFTI_DT.FLOAT64), false)
+
+  const mask = new Uint8Array([0, 0, 1, 1])
+
+  // 1. Positive-slope int16 (decoded > 32767 would clip if round-tripped through float32)
+  {
+    const input = new Int16Array([-32000, -32768, -32600, -31000])
+    const snap = Int16Array.from(input)
+    const res = maskMindGrabVolume(input, NIFTI_DT.INT16, 512, 512 * 32768, mask)
+    assert.deepEqual(Array.from(input), Array.from(snap), 'must not mutate caller input buffer')
+    assert.equal(res.sclSlope, 512)
+    assert.equal(res.sclInter, 512 * 32768)
+    assert.ok(res.data instanceof Int16Array)
+    assert.deepEqual(Array.from(res.data), [-32768, -32768, -32600, -31000])
+  }
+
+  // 2. Negative-slope int16 (minimum decoded intensity is maximum stored value)
+  {
+    const input = new Int16Array([32000, 32767, 32600, 31000])
+    const res = maskMindGrabVolume(input, NIFTI_DT.INT16, -512, 512 * 32767, mask)
+    assert.equal(res.sclSlope, -512)
+    assert.equal(res.sclInter, 512 * 32767)
+    assert.deepEqual(Array.from(res.data), [32767, 32767, 32600, 31000])
+  }
+
+  // 3. Fractional-slope int16 (no quantization to 0/1) & intercept-only uint16 (CT style)
+  {
+    const frac = maskMindGrabVolume(new Int16Array([100, -32768, 500, 1200]), NIFTI_DT.INT16, 0.0005, 0, mask)
+    assert.equal(frac.sclSlope, 0.0005)
+    assert.equal(frac.sclInter, 0)
+    assert.deepEqual(Array.from(frac.data), [-32768, -32768, 500, 1200])
+
+    const ct = maskMindGrabVolume(new Uint16Array([500, 0, 924, 1064]), NIFTI_DT.UINT16, 1, -1024, mask)
+    assert.equal(ct.sclSlope, 1)
+    assert.equal(ct.sclInter, -1024)
+    assert.deepEqual(Array.from(ct.data), [0, 0, 924, 1064])
+  }
+
+  // 4. Unscaled int32 > 2^24 (exact low bits preserved without float32 rounding)
+  {
+    const input = new Int32Array([100000005, 100000001, 100000003, 100000007])
+    const res = maskMindGrabVolume(input, NIFTI_DT.INT32, 1, 0, mask)
+    assert.equal(res.sclSlope, 1)
+    assert.equal(res.sclInter, 0)
+    assert.deepEqual(Array.from(res.data), [100000001, 100000001, 100000003, 100000007])
+  }
+
+  // 5. BigInt64Array & BigUint64Array adjacent extremes that tie in IEEE-754 float64
+  {
+    const base = 1n << 60n
+    const i64 = new BigInt64Array([base + 1n, base, base + 7n, base + 99n])
+    const resPos = maskMindGrabVolume(i64, NIFTI_DT.INT64, 1, 0, mask)
+    assert.ok(resPos.data instanceof BigInt64Array)
+    assert.deepEqual(Array.from(resPos.data), [base, base, base + 7n, base + 99n])
+
+    const u64Max = (1n << 64n) - 1n
+    const u64 = new BigUint64Array([u64Max - 1n, u64Max, base + 5n, 42n])
+    const resNeg = maskMindGrabVolume(u64, NIFTI_DT.UINT64, -0.5, 100, mask)
+    assert.ok(resNeg.data instanceof BigUint64Array)
+    assert.equal(resNeg.sclSlope, -0.5)
+    assert.equal(resNeg.sclInter, 100)
+    assert.deepEqual(Array.from(resNeg.data), [u64Max, u64Max, base + 5n, 42n])
+  }
+
+  // 6. NIfTI-1 scl_slope == 0 disables scaling completely (ignores scl_inter)
+  {
+    const raw = new Int16Array([0, 10, 20, 30])
+    const decoded = decodeNiftiVoxelsToFloat32(raw, 0, 500)
+    assert.deepEqual(Array.from(decoded), [0, 10, 20, 30])
+
+    const masked = maskMindGrabVolume(raw, NIFTI_DT.INT16, 0, 500, mask)
+    assert.equal(masked.sclSlope, 1)
+    assert.equal(masked.sclInter, 0)
+    assert.deepEqual(Array.from(masked.data), [0, 0, 20, 30])
+
+    // conformVolumeData must also ignore sclInter when sclSlope == 0
+    const dims = [3, 4, 4, 4, 1, 1, 1, 1]
+    const affine = [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1]
+    const vol = Int16Array.from({ length: 64 }, (_, i) => i)
+    const cZero = conformVolumeData({ img: vol, datatypeCode: NIFTI_DT.INT16, dims, affine, sclSlope: 0, sclInter: 5000, fHigh: INFERENCE_CONFORM_FHIGH })
+    const cOne = conformVolumeData({ img: vol, datatypeCode: NIFTI_DT.INT16, dims, affine, sclSlope: 1, sclInter: 0, fHigh: INFERENCE_CONFORM_FHIGH })
+    assert.deepEqual(cZero.img, cOne.img)
+  }
+
+  // 7. Float32 with NaN still sanitizes and outputs sclSlope=1, sclInter=0
+  {
+    const f32 = new Float32Array([Number.NaN, 5, 10, 20])
+    const res = maskMindGrabVolume(f32, NIFTI_DT.FLOAT32, 2, 10, mask)
+    assert.equal(res.sclSlope, 1)
+    assert.equal(res.sclInter, 0)
+    assert.ok(res.data instanceof Float32Array)
+    assert.deepEqual(Array.from(res.data), [0, 0, 30, 50])
   }
 })

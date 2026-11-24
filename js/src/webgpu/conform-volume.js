@@ -97,9 +97,10 @@ export function isVolumeConformed(vol) {
   if (!is1mm) return false;
   const slope = vol.hdr?.scl_slope;
   const inter = vol.hdr?.scl_inter;
+  const hasScaling = Number.isFinite(slope) && slope !== 0;
   const isUnscaled =
-    (slope === undefined || slope === 0 || Math.abs(slope - 1) < 1e-6) &&
-    (inter === undefined || Math.abs(inter) < 1e-6);
+    !hasScaling ||
+    (Math.abs(slope - 1) < 1e-6 && (inter === undefined || Math.abs(inter) < 1e-6));
   if (!isUnscaled) return false;
   const perm = vol.permRAS;
   if (!perm || perm[0] !== -1 || perm[1] !== 3 || perm[2] !== -2) return false;
@@ -457,8 +458,9 @@ export function conformVolumeData({
     throw new Error(`Input buffer length (${raw ? raw.length : 0}) is smaller than ${nx}x${ny}x${nz}`);
   }
 
-  const slope = Number.isFinite(sclSlope) && sclSlope !== 0 ? sclSlope : 1;
-  const inter = Number.isFinite(sclInter) ? sclInter : 0;
+  const hasScaling = Number.isFinite(sclSlope) && sclSlope !== 0;
+  const slope = hasScaling ? sclSlope : 1;
+  const inter = hasScaling && Number.isFinite(sclInter) ? sclInter : 0;
   let vol = new Float32Array(nvox);
   const isBigInt = raw instanceof BigInt64Array || raw instanceof BigUint64Array;
   let finiteCount = 0;

@@ -1519,6 +1519,7 @@ endif
 	$(MAKE) test-cpu-turbo
 	$(MAKE) test-cpu-sme
 	$(MAKE) test-guards
+	$(MAKE) test-mindgrab-encoding
 	$(MAKE) test-label-cleanup
 	$(MAKE) test-label-quality
 	@if [ -f "$(BC_BRAINCHOP_TEST)/main.js" ] && command -v node >/dev/null 2>&1; then \
@@ -1667,6 +1668,12 @@ test-models: models $(TEST_MG) $(TEST_M16) $(TEST_M16_NATIVE) $(TEST_MM) $(TEST_
 bc_link_model = $(CC) $(CPPFLAGS) $(CFLAGS) -I. -Imodels/$(1) -D$(sel_$(1))=1 \
 	$(2) $(filter-out build/$(1)/brainchopc.o,$($(1)_OBJS)) \
 	$($(1)_LINK_EXTRA) $(LDFLAGS) $(LDLIBS)
+
+.PHONY: test-mindgrab-encoding
+test-mindgrab-encoding: models | $(BC_TMP)
+	$(call bc_link_model,mindgrab,../test/mindgrab_encoding_check.c) \
+		-o $(BC_TMP)/mindgrab-encoding-check$(EXEEXT)
+	$(BC_TMP)/mindgrab-encoding-check$(EXEEXT)
 
 .PHONY: test-label-quality
 test-label-quality: models | $(BC_TMP)

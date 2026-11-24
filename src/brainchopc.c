@@ -203,6 +203,55 @@ static int sanitize_input(nifti_image *nim, int source_datatype) {
 	return 0;
 }
 
+static void resolve_nifti_scaling(const nifti_image *nim, double *slope, double *inter) {
+	if (isfinite(nim->scl_slope) && nim->scl_slope != 0.0) {
+		*slope = nim->scl_slope;
+		*inter = isfinite(nim->scl_inter) ? nim->scl_inter : 0.0;
+	} else {
+		/* Per NIfTI-1, scl_slope == 0 (or non-finite) disables scaling,
+		 * including scl_inter. */
+		*slope = 1.0;
+		*inter = 0.0;
+	}
+}
+
+#define BC_DECODE_F32(T, src_ptr, dst_ptr, count, slope_val, inter_val) do { \
+	const T *in = (const T *)(src_ptr); \
+	if ((slope_val) == 1.0 && (inter_val) == 0.0) { \
+		for (size_t i = 0; i < (count); i++) (dst_ptr)[i] = (float)(double)in[i]; \
+	} else { \
+		for (size_t i = 0; i < (count); i++) \
+			(dst_ptr)[i] = (float)((double)in[i] * (slope_val) + (inter_val)); \
+	} \
+} while (0)
+
+static void decode_to_float32(const nifti_image *src, float *dst) {
+	double slope, inter;
+	resolve_nifti_scaling(src, &slope, &inter);
+	size_t n = (size_t)src->nvox;
+	if (src->datatype == DT_FLOAT32 && slope == 1.0 && inter == 0.0) {
+		memcpy(dst, src->data, n * sizeof(*dst));
+		return;
+	}
+	switch (src->datatype) {
+	case DT_UINT8:   BC_DECODE_F32(uint8_t,  src->data, dst, n, slope, inter); break;
+	case DT_INT8:    BC_DECODE_F32(int8_t,   src->data, dst, n, slope, inter); break;
+	case DT_UINT16:  BC_DECODE_F32(uint16_t, src->data, dst, n, slope, inter); break;
+	case DT_INT16:   BC_DECODE_F32(int16_t,  src->data, dst, n, slope, inter); break;
+	case DT_UINT32:  BC_DECODE_F32(uint32_t, src->data, dst, n, slope, inter); break;
+	case DT_INT32:   BC_DECODE_F32(int32_t,  src->data, dst, n, slope, inter); break;
+	case DT_UINT64:  BC_DECODE_F32(uint64_t, src->data, dst, n, slope, inter); break;
+	case DT_INT64:   BC_DECODE_F32(int64_t,  src->data, dst, n, slope, inter); break;
+	case DT_FLOAT32: BC_DECODE_F32(float,    src->data, dst, n, slope, inter); break;
+	case DT_FLOAT64: BC_DECODE_F32(double,   src->data, dst, n, slope, inter); break;
+	default:
+		for (size_t i = 0; i < n; i++) dst[i] = NAN;
+		break;
+	}
+}
+
+#undef BC_DECODE_F32
+
 int brainchopc_convert(nifti_image *nim, int datatype) {
 	if (!nim || !nim->data || nim->nvox < 1) return 1;
 	if (nim->datatype == datatype && nim->scl_slope == 1.0 && nim->scl_inter == 0.0) return 0;
@@ -211,22 +260,25 @@ int brainchopc_convert(nifti_image *nim, int datatype) {
 	if (nbyper < 1 || datatype == DT_RGB24 || datatype == DT_RGBA32) return 1;
 	void *out=nii_malloc((size_t)nim->nvox,(size_t)nbyper);
 	if (!out) return 1;
-	double slope=(!isfinite(nim->scl_slope) || nim->scl_slope == 0.0) ? 1.0 : nim->scl_slope;
-	double inter=isfinite(nim->scl_inter) ? nim->scl_inter : 0.0;
-	for (size_t i=0;i<(size_t)nim->nvox;i++) {
-		double v=voxel(nim,i)*slope+inter;
-		switch(datatype) {
-		case DT_UINT8: ((uint8_t*)out)[i]=(uint8_t)clamp_round(v,0,UINT8_MAX); break;
-		case DT_INT8: ((int8_t*)out)[i]=(int8_t)clamp_round(v,INT8_MIN,INT8_MAX); break;
-		case DT_UINT16: ((uint16_t*)out)[i]=(uint16_t)clamp_round(v,0,UINT16_MAX); break;
-		case DT_INT16: ((int16_t*)out)[i]=(int16_t)clamp_round(v,INT16_MIN,INT16_MAX); break;
-		case DT_UINT32: ((uint32_t*)out)[i]=(uint32_t)clamp_round(v,0,UINT32_MAX); break;
-		case DT_INT32: ((int32_t*)out)[i]=(int32_t)clamp_round(v,INT32_MIN,INT32_MAX); break;
-		case DT_UINT64: ((uint64_t*)out)[i]=round_u64(v); break;
-		case DT_INT64: ((int64_t*)out)[i]=round_i64(v); break;
-		case DT_FLOAT32: ((float*)out)[i]=(float)v; break;
-		case DT_FLOAT64: ((double*)out)[i]=v; break;
-		default: free(out); return 1;
+	if (datatype == DT_FLOAT32) {
+		decode_to_float32(nim, (float *)out);
+	} else {
+		double slope, inter;
+		resolve_nifti_scaling(nim, &slope, &inter);
+		for (size_t i=0;i<(size_t)nim->nvox;i++) {
+			double v=voxel(nim,i)*slope+inter;
+			switch(datatype) {
+			case DT_UINT8: ((uint8_t*)out)[i]=(uint8_t)clamp_round(v,0,UINT8_MAX); break;
+			case DT_INT8: ((int8_t*)out)[i]=(int8_t)clamp_round(v,INT8_MIN,INT8_MAX); break;
+			case DT_UINT16: ((uint16_t*)out)[i]=(uint16_t)clamp_round(v,0,UINT16_MAX); break;
+			case DT_INT16: ((int16_t*)out)[i]=(int16_t)clamp_round(v,INT16_MIN,INT16_MAX); break;
+			case DT_UINT32: ((uint32_t*)out)[i]=(uint32_t)clamp_round(v,0,UINT32_MAX); break;
+			case DT_INT32: ((int32_t*)out)[i]=(int32_t)clamp_round(v,INT32_MIN,INT32_MAX); break;
+			case DT_UINT64: ((uint64_t*)out)[i]=round_u64(v); break;
+			case DT_INT64: ((int64_t*)out)[i]=round_i64(v); break;
+			case DT_FLOAT64: ((double*)out)[i]=v; break;
+			default: free(out); return 1;
+			}
 		}
 	}
 	free(nim->data);
@@ -235,59 +287,82 @@ int brainchopc_convert(nifti_image *nim, int datatype) {
 	return 0;
 }
 
-static int scaled_integer_input(const nifti_image *image) {
-	switch(image->datatype) {
+static int integer_input(const nifti_image *image) {
+	switch (image->datatype) {
 	case DT_UINT8: case DT_INT8:
 	case DT_UINT16: case DT_INT16:
 	case DT_UINT32: case DT_INT32:
 	case DT_UINT64: case DT_INT64:
-		return isfinite(image->scl_slope) && image->scl_slope != 0.0 &&
-			isfinite(image->scl_inter) &&
-			(image->scl_slope != 1.0 || image->scl_inter != 0.0);
+		return 1;
 	default:
 		return 0;
 	}
 }
 
-static int stored_voxel_less(const nifti_image *image, size_t a, size_t b) {
-	/* Adjacent 64-bit integers can round to the same double in voxel(). */
-	if(image->datatype==DT_INT64) {
-		const int64_t *data=image->data;
-		return data[a]<data[b];
+#define BC_MASK_TYPED(T, ptr, count, mask_arr, desc) do { \
+	T *vals = (T *)(ptr); \
+	T bg = vals[0]; \
+	if (desc) { \
+		for (size_t i = 1; i < (count); i++) if (vals[i] > bg) bg = vals[i]; \
+	} else { \
+		for (size_t i = 1; i < (count); i++) if (vals[i] < bg) bg = vals[i]; \
+	} \
+	for (size_t i = 0; i < (count); i++) if ((mask_arr)[i] <= 0.0f) vals[i] = bg; \
+} while (0)
+
+static void mask_integer_input(nifti_image *image, const float *mask) {
+	/* Preserve the native integer encoding and scaling. The lowest decoded
+	 * intensity is at the largest stored value when scl_slope < 0; scl_slope == 0
+	 * (or non-finite) disables scaling per NIfTI-1 and is normalized to (1, 0). */
+	if (!image || !image->data || !mask || image->nvox < 1) return;
+	int descending = 0;
+	if (isfinite(image->scl_slope) && image->scl_slope != 0.0) {
+		descending = image->scl_slope < 0.0;
+		if (!isfinite(image->scl_inter)) image->scl_inter = 0.0;
+	} else {
+		image->scl_slope = 1.0;
+		image->scl_inter = 0.0;
 	}
-	if(image->datatype==DT_UINT64) {
-		const uint64_t *data=image->data;
-		return data[a]<data[b];
+	size_t n = (size_t)image->nvox;
+	switch (image->datatype) {
+	case DT_UINT8:  BC_MASK_TYPED(uint8_t,  image->data, n, mask, descending); break;
+	case DT_INT8:   BC_MASK_TYPED(int8_t,   image->data, n, mask, descending); break;
+	case DT_UINT16: BC_MASK_TYPED(uint16_t, image->data, n, mask, descending); break;
+	case DT_INT16:  BC_MASK_TYPED(int16_t,  image->data, n, mask, descending); break;
+	case DT_UINT32: BC_MASK_TYPED(uint32_t, image->data, n, mask, descending); break;
+	case DT_INT32:  BC_MASK_TYPED(int32_t,  image->data, n, mask, descending); break;
+	case DT_UINT64: BC_MASK_TYPED(uint64_t, image->data, n, mask, descending); break;
+	case DT_INT64:  BC_MASK_TYPED(int64_t,  image->data, n, mask, descending); break;
+	default: break;
 	}
-	return voxel(image,a)<voxel(image,b);
 }
 
-static void mask_scaled_input(nifti_image *image, const float *mask) {
-	/* Preserve the input encoding. The lowest decoded intensity is at the
-	 * largest stored value when the slope is negative. */
-	size_t background=0;
-	int descending=image->scl_slope<0.0;
-	for(size_t i=1;i<(size_t)image->nvox;i++) {
-		if(descending ? stored_voxel_less(image,background,i) : stored_voxel_less(image,i,background))
-			background=i;
-	}
-	size_t width=(size_t)image->nbyper;
-	unsigned char *data=image->data;
-	for(size_t i=0;i<(size_t)image->nvox;i++)
-		if(i!=background && mask[i]<=0.0f)
-			memcpy(data+i*width,data+background*width,width);
+#undef BC_MASK_TYPED
+
+static nifti_image *copy_header(const nifti_image *source) {
+	nifti_image *copy=calloc(1,sizeof(*copy));
+	if(!copy)return NULL;
+	*copy=*source;
+	copy->fname=NULL;
+	copy->iname=NULL;
+	copy->data=NULL;
+	copy->num_ext=0;
+	copy->ext_list=NULL;
+	return copy;
 }
 
-static nifti_image *private_image_copy(const nifti_image *src) {
-	nifti_image *dst=calloc(1,sizeof(*dst));
+static nifti_image *private_float_copy(const nifti_image *src) {
+	if (!src || !src->data || src->nvox < 1) return NULL;
+	nifti_image *dst = copy_header(src);
 	if (!dst) return NULL;
-	*dst=*src;
-	dst->fname=NULL; dst->iname=NULL; dst->ext_list=NULL; dst->num_ext=0;
-	size_t bytes;
-	if (nii_mul_size((size_t)src->nvox,(size_t)src->nbyper,&bytes)) { free(dst); return NULL; }
-	dst->data=malloc(bytes);
-	if (!dst->data) { free(dst); return NULL; }
-	memcpy(dst->data,src->data,bytes);
+	float *out = nii_malloc((size_t)src->nvox, sizeof(*out));
+	if (!out) { free(dst); return NULL; }
+	decode_to_float32(src, out);
+	dst->data = out;
+	dst->datatype = DT_FLOAT32;
+	dst->nbyper = (int)sizeof(float);
+	dst->scl_slope = 1.0;
+	dst->scl_inter = 0.0;
 	return dst;
 }
 
@@ -338,18 +413,6 @@ static float *load_model_weights(void) {
 	memcpy(packed+dst_off,raw+src_off,(count-src_off)*sizeof(float));
 	return packed;
 #endif
-}
-
-static nifti_image *copy_header(const nifti_image *source) {
-	nifti_image *copy=calloc(1,sizeof(*copy));
-	if(!copy)return NULL;
-	*copy=*source;
-	copy->fname=NULL;
-	copy->iname=NULL;
-	copy->data=NULL;
-	copy->num_ext=0;
-	copy->ext_list=NULL;
-	return copy;
 }
 
 static void format_provenance_descrip(char descrip[80],
@@ -555,12 +618,11 @@ static int run_model(nifti_image *original, int input_datatype,
 		int mindgrab_output, const float *weights, const bc_backend *backend,
 		int allow_fallback, const bc_cli_options *cli, nifti_image **output) {
 	*output=NULL;
-	int preserve_encoding=mindgrab_output && scaled_integer_input(original);
+	int preserve_encoding=mindgrab_output && integer_input(original);
 	bc_stage(NULL);
-	nifti_image *conformed=private_image_copy(original);
+	nifti_image *conformed=private_float_copy(original);
 	if (!conformed) return 1;
-	if(preserve_encoding &&
-		(brainchopc_convert(conformed,DT_FLOAT32) || sanitize_input(conformed,input_datatype))) {
+	if(preserve_encoding && sanitize_input(conformed,input_datatype)) {
 		nifti_image_free(conformed);return 1;
 	}
 	bc_stage("copy");
@@ -742,7 +804,7 @@ static int run_model(nifti_image *original, int input_datatype,
 			nifti_image_free(conformed);return 1;
 		}
 		if(preserve_encoding) {
-			mask_scaled_input(original,resliced);
+			mask_integer_input(original,resliced);
 		} else {
 			float *img=original->data;
 			float mn=INFINITY;
@@ -936,7 +998,7 @@ int main(int argc, char **argv) {
 		free(weights);nifti_image_free(nim);return 1;
 	}
 	nifti_image *output=NULL;
-	int preserve_encoding=mindgrab_output && scaled_integer_input(nim);
+	int preserve_encoding=mindgrab_output && integer_input(nim);
 	if ((!preserve_encoding &&
 		 (brainchopc_convert(nim,DT_FLOAT32) || sanitize_input(nim,input_datatype))) ||
 	    run_model(nim,input_datatype,mindgrab_output,weights,backend,automatic_backend,

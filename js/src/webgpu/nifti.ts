@@ -585,6 +585,22 @@ export function readNifti1(input: ArrayBuffer | Uint8Array): NiftiVolume {
   return { header, data }
 }
 
+export function isIntegerNiftiDatatype(datatypeCode: number): boolean {
+  switch (datatypeCode) {
+    case NIFTI_DT.UINT8:
+    case NIFTI_DT.INT8:
+    case NIFTI_DT.UINT16:
+    case NIFTI_DT.INT16:
+    case NIFTI_DT.UINT32:
+    case NIFTI_DT.INT32:
+    case NIFTI_DT.INT64:
+    case NIFTI_DT.UINT64:
+      return true
+    default:
+      return false
+  }
+}
+
 /**
  * Decode scaled voxels to finite Float32Array (matching brainchopc_convert + sanitize_input).
  */
@@ -595,14 +611,15 @@ export function decodeNiftiVoxelsToFloat32(
 ): Float32Array {
   const n = data.length
   const out = new Float32Array(n)
-  const slope = Number.isFinite(sclSlope) && sclSlope !== 0 ? sclSlope : 1
-  const inter = Number.isFinite(sclInter) ? sclInter : 0
+  const hasScaling = Number.isFinite(sclSlope) && sclSlope !== 0
+  const slope = hasScaling ? sclSlope : 1
+  const inter = hasScaling && Number.isFinite(sclInter) ? sclInter : 0
   const isBigInt = data instanceof BigInt64Array || data instanceof BigUint64Array
   let finiteCount = 0
 
   for (let i = 0; i < n; i++) {
     const raw = isBigInt ? Number(data[i]) : (data[i] as number)
-    const v = raw * slope + inter
+    const v = Math.fround(raw * slope + inter)
     if (Number.isFinite(v)) {
       out[i] = v
       finiteCount++
@@ -614,6 +631,75 @@ export function decodeNiftiVoxelsToFloat32(
     throw new Error('Input volume has no finite voxels')
   }
   return out
+}
+
+/**
+ * Apply a binary MindGrab brain mask to a native NIfTI volume (matching
+ * mask_integer_input / float fallback in src/brainchopc.c).
+ *
+ * Integer inputs keep their native stored values and scaling without passing
+ * through float32 (preventing clipping, fractional-slope quantization, and
+ * >24-bit integer precision loss). Non-brain voxels receive the stored value
+ * corresponding to the minimum decoded intensity (maximum stored value when
+ * sclSlope < 0). Input arrays are never mutated in place.
+ */
+export function maskMindGrabVolume(
+  data: NiftiTypedArray,
+  datatypeCode: number,
+  sclSlope: number,
+  sclInter: number,
+  mask: Uint8Array,
+): { data: NiftiTypedArray; sclSlope: number; sclInter: number } {
+  if (isIntegerNiftiDatatype(datatypeCode)) {
+    const hasScaling = Number.isFinite(sclSlope) && sclSlope !== 0
+    const descending = hasScaling && sclSlope < 0
+    const outSlope = hasScaling ? sclSlope : 1
+    const outInter = hasScaling && Number.isFinite(sclInter) ? sclInter : 0
+
+    if (data instanceof BigInt64Array || data instanceof BigUint64Array) {
+      const out = data instanceof BigInt64Array ? new BigInt64Array(data) : new BigUint64Array(data)
+      if (out.length > 0) {
+        let bg = out[0]
+        if (descending) {
+          for (let i = 1; i < out.length; i++) if (out[i] > bg) bg = out[i]
+        } else {
+          for (let i = 1; i < out.length; i++) if (out[i] < bg) bg = out[i]
+        }
+        for (let i = 0; i < out.length; i++) {
+          if (mask[i] === 0) out[i] = bg
+        }
+      }
+      return { data: out, sclSlope: outSlope, sclInter: outInter }
+    }
+
+    const out = data.slice()
+    if (out.length > 0) {
+      let bg = out[0]
+      if (descending) {
+        for (let i = 1; i < out.length; i++) if (out[i] > bg) bg = out[i]
+      } else {
+        for (let i = 1; i < out.length; i++) if (out[i] < bg) bg = out[i]
+      }
+      for (let i = 0; i < out.length; i++) {
+        if (mask[i] === 0) out[i] = bg
+      }
+    }
+    return { data: out, sclSlope: outSlope, sclInter: outInter }
+  }
+
+  const origFloat = decodeNiftiVoxelsToFloat32(data, sclSlope, sclInter)
+  let mn = Infinity
+  for (let i = 0; i < origFloat.length; i++) {
+    if (origFloat[i] < mn) mn = origFloat[i]
+  }
+  for (let i = 0; i < origFloat.length; i++) {
+    if (mask[i] === 0) origFloat[i] = mn
+  }
+  return {
+    data: encodeFloat32ToDatatype(origFloat, datatypeCode),
+    sclSlope: 1,
+    sclInter: 0,
+  }
 }
 
 function clampRound(x: number, lo: number, hi: number): number {

@@ -17,8 +17,7 @@ import type {
 import {
   readNifti1,
   writeNifti1,
-  decodeNiftiVoxelsToFloat32,
-  encodeFloat32ToDatatype,
+  maskMindGrabVolume,
   isValidAffine4x4,
   NIFTI_DT,
   NIFTI_INTENT_LABEL,
@@ -695,21 +694,19 @@ export async function runWebGpuSegment(request: WebGpuSegmentRequest): Promise<W
       })
     }
 
-    // Apply mask to native input volume, flooring non-brain voxels to min(input)
-    // (matches src/brainchopc.c:653-661).
-    const origFloat = decodeNiftiVoxelsToFloat32(orig.data, orig.header.sclSlope, orig.header.sclInter)
-    let mn = Infinity
-    for (let i = 0; i < origFloat.length; i++) {
-      if (origFloat[i] < mn) mn = origFloat[i]
-    }
-    for (let i = 0; i < origFloat.length; i++) {
-      if (nativeMask[i] === 0) origFloat[i] = mn
-    }
-    const maskedTyped = encodeFloat32ToDatatype(origFloat, orig.header.datatypeCode)
-    const imageBytes = writeNifti1(orig.header, maskedTyped, {
+    // Apply mask to native input volume, preserving native integer encoding and
+    // NIfTI scaling (matches mask_integer_input / float path in src/brainchopc.c).
+    const masked = maskMindGrabVolume(
+      orig.data,
+      orig.header.datatypeCode,
+      orig.header.sclSlope,
+      orig.header.sclInter,
+      nativeMask,
+    )
+    const imageBytes = writeNifti1(orig.header, masked.data, {
       datatypeCode: orig.header.datatypeCode,
-      sclSlope: 1,
-      sclInter: 0,
+      sclSlope: masked.sclSlope,
+      sclInter: masked.sclInter,
       descrip: segDescrip,
     })
 
