@@ -9,6 +9,9 @@ authors:
   - family-names: Rorden
     given-names: Chris
     affiliation: "University of South Carolina"
+  - family-names: Nizam
+    given-names: "Mohammad Usman"
+    affiliation: "Tri-Institutional Center for Translational Research in Neuroimaging and Data Science (TReNDS), Georgia State University"
 repository-code: "https://github.com/neuroneural/brainchop-core"
 url: "https://brainchop.org"
 license: MIT
